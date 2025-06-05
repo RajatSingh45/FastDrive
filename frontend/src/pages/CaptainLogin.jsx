@@ -1,18 +1,42 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { captainContext } from "../contexts/CaptainDataContext";
 
 const CaptainLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [cpatainData, setCaptainData] = useState({});
+  const navigate = useNavigate();
+  const {captain,setCaptain}=useContext(captainContext)
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setCaptainData({
+    const signInCaptain = {
       email: email,
       password: password,
-    });
+    };
 
+    //calling backend
+    try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/captains/login`,
+      signInCaptain
+    );
+     
+    //console.log('in frontend')
+    const data = response.data;
+
+    if (response.status === 201 && data.success) {
+      setCaptain(data.captain);
+      localStorage.setItem('token', data.token);
+      navigate("/captain-home");
+    } else {
+      alert(data.message || "Signup failed");
+    }
+  } catch (error) {
+    console.error("Signup error:", error.response?.data ||error.message);
+    alert("Something went wrong during signin.");
+  }
     setEmail("");
     setPassword("");
   };
@@ -37,7 +61,7 @@ const CaptainLogin = () => {
             className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
             type="email"
             placeholder="email@example.com"
-            reqiured
+            required
           />
           <h3 className="text-lg font-medium mb-2">Enter Password</h3>
           <input

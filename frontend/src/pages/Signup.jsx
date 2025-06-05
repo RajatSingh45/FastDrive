@@ -1,27 +1,53 @@
-import React, { useState } from "react"
-import {Link} from 'react-router-dom'
+import React, { useContext, useState } from "react"
+import {Link, useNavigate} from 'react-router-dom'
+import {userDataContext} from '../contexts/UserDataContext'
+import axios from 'axios'
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("")
-  const [Firstname,setFtistname]=useState('')
+  const [Firstname,setFirstname]=useState('')
   const [Lastname,setLastname]=useState('')
   const [userData, setUserData] = useState({})
 
-  const submitHandler = (e) => {
+  const navigate=useNavigate()
+  const { user, setUser } = useContext(userDataContext)
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setUserData({
-      name:{
+    //creating new user
+    const newUser={
+      fullname:{
         firstname:Firstname,
         lastname:Lastname
       },
-      email: email,
-      password: password,
-    });
+      email,
+      password
+    }
 
+    //seding request tom backend server
+     try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/users/register`,
+      newUser
+    );
+
+    const data = response.data;
+
+    if (response.status === 201 && data.success) {
+      setUser(data.user);
+      localStorage.setItem('token', data.token);
+      navigate("/home");
+    } else {
+      alert(data.message || "Signup failed");
+    }
+  } catch (error) {
+    console.error("Signup error:", error);
+    alert("Something went wrong during signup.");
+  }
     setEmail("");
     setPassword("");
-    setFtistname('')
+    setFirstname('')
     setLastname('')
   };
   return (
@@ -41,12 +67,12 @@ const Signup = () => {
             <input
               value={Firstname}
               onChange={(e) => {
-                setFtistname(e.target.value);
+                setFirstname(e.target.value);
               }}
               className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
               type="text"
               placeholder="First Name"
-              reqiured
+              required
             />
             <input
               value={Lastname}
@@ -60,14 +86,14 @@ const Signup = () => {
           </div>
           <h3 className="text-lg font-medium mb-2">Enter Email</h3>
             <input
-              value={Firstname}
+              value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
               className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
               type="email"
               placeholder="email@example.com"
-              reqiured
+              required
             />
           <h3 className="text-lg font-medium mb-2">Enter Password</h3>
           <input
