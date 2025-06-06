@@ -1,29 +1,63 @@
-import React, { useState } from 'react'
-import {Link} from 'react-router-dom'
-
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { captainContext } from "../contexts/CaptainDataContext";
 
 const CaptainSignup = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("")
-  const [Firstname,setFtistname]=useState('')
-  const [Lastname,setLastname]=useState('')
-  const [userData, setUserData] = useState({})
 
-  const submitHandler = (e) => {
+  const{captain,setCaptain,updateCaptain}=useContext(captainContext)
+  const navigate=useNavigate()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [Firstname, setFtistname] = useState("");
+  const [Lastname, setLastname] = useState("");
+  const [userData, setUserData] = useState({});
+  const [veichleColor, setVeichleColor] = useState("");
+  const [veichlePlate, setVeichlePlate] = useState("");
+  const [veichleCapacity, setVeichleCapacity] = useState("");
+  const [veichleType, setVeichleType] = useState("");
+
+  const submitHandler = async(e) => {
     e.preventDefault();
-    setUserData({
-      name:{
-        firstname:Firstname,
-        lastname:Lastname
+   const newCaptain={
+      fullname: {
+        firstname: Firstname,
+        lastname: Lastname,
       },
       email: email,
       password: password,
-    });
+      veichle:{
+        color:veichleColor,
+        plate:veichlePlate,
+        capacity:veichleCapacity,
+        veichleType:veichleType
+      }
+    }
 
+      try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/captains/register`,
+      newCaptain
+    );
+
+    const data = response.data;
+
+
+    if (response.status === 201 && data.success) {
+      setCaptain(data.captain);
+      localStorage.setItem('token', data.token);
+      navigate("/captain-home");
+    } else {
+      alert(data.message || "Signup failed");
+    }
+  } catch (error) {
+    console.error("Signup error:", error);
+    alert("Something went wrong during signup.");
+  }
     setEmail("");
     setPassword("");
-    setFtistname('')
-    setLastname('')
+    setFtistname("");
+    setLastname("");
   };
   return (
     <div className="p-7 flex flex-col justify-between h-scree">
@@ -60,16 +94,16 @@ const CaptainSignup = () => {
             />
           </div>
           <h3 className="text-lg font-medium mb-2">Enter Email</h3>
-            <input
-              value={Firstname}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-              className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
-              type="email"
-              placeholder="email@example.com"
-              reqiured
-            />
+          <input
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+            className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
+            type="email"
+            placeholder="email@example.com"
+            reqiured
+          />
           <h3 className="text-lg font-medium mb-2">Enter Password</h3>
           <input
             value={password}
@@ -81,8 +115,56 @@ const CaptainSignup = () => {
             placeholder="password"
             required
           />
+          <h3 className="text-lg font-medium mb-2">Veichle Details</h3>
+          <div className="flex gap-4">
+            <input
+              value={veichleColor}
+              onChange={(e) => {
+                setVeichleColor(e.target.value);
+              }}
+              className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
+              type="text"
+              placeholder="Veichle colour"
+              required
+            />
+            <input
+              value={veichlePlate}
+              onChange={(e) => {
+                setVeichlePlate(e.target.value);
+              }}
+              className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
+              type="text"
+              placeholder="Veichle number"
+              required
+            />
+          </div>
+          <div className="flex gap-4">
+            <input
+              value={veichleCapacity}
+              onChange={(e) => {
+                setVeichleCapacity(e.target.value);
+              }}
+              className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
+              type="text"
+              placeholder="Veichle capacity"
+              required
+            />
+            <select
+              className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
+              value={veichleType}
+              onChange={(e)=>{
+                setVeichleType(e.target.value)
+              }}
+              required
+            >
+              <option value="" disabled>Veichle type</option>
+              <option value="Car">Car</option>
+              <option value="Motor Bike">Motorcycle</option>
+              <option value="Auto">Auto</option>
+            </select>
+          </div>
           <button className="bg-[#111] text-white font-semibold mb-7  rounded px-4 py-2  w-full text-lg placeholder:text-base">
-            Sign Up
+            Crete new account
           </button>
           <p className="text-center">
             Already have an account?
@@ -94,6 +176,6 @@ const CaptainSignup = () => {
       </div>
     </div>
   );
-}
+};
 
-export default CaptainSignup
+export default CaptainSignup;

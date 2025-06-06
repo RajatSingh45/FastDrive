@@ -1,11 +1,10 @@
 import captainModel from "../models/captainModel.js";
 import { validationResult } from "express-validator";
-import blackListTokenModel from "../models/blackListTokenModel.js"
+import blackListTokenModel from "../models/blackListTokenModel.js";
 
-const captainRegister = async (req,res) => {
+const captainRegister = async (req, res) => {
   try {
     const { fullname, email, password, veichle } = req.body;
-
 
     //check all field
     if (
@@ -60,7 +59,7 @@ const captainRegister = async (req,res) => {
   }
 };
 
-const captainLogin = async (req,res) => {
+const captainLogin = async (req, res) => {
   try {
     const validateError = validationResult(req);
     if (!validateError.isEmpty()) {
@@ -90,19 +89,23 @@ const captainLogin = async (req,res) => {
   }
 };
 
-const captainProfile = async (req,res) => {
-    res.status(200).json(req.captain);
+const captainProfile = async (req, res) => {
+  res.status(200).json(req.captain);
 };
 
-const captainLogout = async (req,res) => {
-       res.clearCookie('token');
+const captainLogout = async (req, res) => {
+  // console.log("in logout controller backend!")
+  res.clearCookie("token");
 
-         const token=req.cookies?.token||req.header.authorization?.split(' ')[1];
-         console.log(token)
+  const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
+  // console.log("Backend received token:", token); // Debug log
+  await blackListTokenModel.updateOne(
+      { token },
+      { $setOnInsert: { token } },
+      { upsert: true }
+    );
 
-         await blackListTokenModel.create({token});
-
-         res.status(200).json({message:"Logout Succesfully"});
+  res.status(200).json({ message: "Logout Succesfully" });
 };
 
 export { captainRegister, captainLogin, captainProfile, captainLogout };

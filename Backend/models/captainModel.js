@@ -52,7 +52,7 @@ const captainSchema = new mongoose.Schema({
     veichleType: {
       type: String,
       required: true,
-      enum: ["car", "motorcycle", "auto"],
+      enum: ["Car", "Motorcycle", "Auto"],
     },
   },
     location: {

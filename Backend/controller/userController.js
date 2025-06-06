@@ -8,7 +8,7 @@ const userRegister = async (req, res) => {
 
     //checking all fields
     if (!fullname.firstname || !email || !password) {
-      return res.json({ message: "All fields are required" });
+       return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
     //checking firstname,email and password is validate odr not using express-validator
@@ -78,9 +78,12 @@ const userLogin = async (req,res) => {
 };
 
 const userLogout = async (req,res) => {
+  console.log("hit backend")
          res.clearCookie('token');
 
-         const token=req.cookies?.token||req.header.authorization?.split(' ')[1];
+         const token=req.cookies?.token||req.headers.authorization?.split(' ')[1];
+
+         console.log("recieved token in logout controller:",token);
 
          await blackListTokenModel.create({token});
 

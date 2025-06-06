@@ -1,16 +1,59 @@
-import React from 'react'
-import {Link} from 'react-router-dom'
+import React, { useState } from "react";
 
 const Home = () => {
-  return (
-    <div className='flex pt-8 flex-col justify-between h-screen w-full bg-red-400 bg-cover bg-center bg-[url(https://images.unsplash.com/photo-1572239780645-203c467a49b5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHRyYWZmaWMlMjBsaWdodHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80)]'>
-        <img className='w-16 ml-8' src="https://th.bing.com/th/id/OIP.nm1FItlXC1Gk_ed4g2EINAHaCm?cb=iwp2&rs=1&pid=ImgDetMain"/>
-        <div className='bg-white pb-7 py-4 px-4'>
-            <h2 className='text-3xl font-bold'>Get Started</h2>
-             <Link to='/login' className=' flex items-center justify-center w-full bg-black text-white py-3 rounded mt-5 '>Continue</Link>
-        </div>
-    </div>
-  )
-}
+  const [pickup,setPickup]=useState('')
+  const [destination,setDestination]=useState('')
 
-export default Home
+  const submitHandler = (e) => {
+    e.preventDefault();
+  };
+  return (
+    <div className="h-screen relative">
+      <img
+        className="w-16 absolute left-5 top-5"
+        src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png"
+        alt="uber logo"
+      />
+      <div className="h-screen w-screen">
+        <img
+          className="h-full w-full object-cover"
+          src="https://th.bing.com/th/id/OIP._0rSU5b1l_1q_2CNBBvuSQHaHa?w=250&h=250&c=8&rs=1&qlt=90&o=6&dpr=2&pid=3.1&rm=2"
+          alt=""
+        />
+      </div>
+      <div className="flex flex-col justify-end h-screen absolute top-0 w-full ">
+        <div className="h-[30%] p-5 bg-white relative">
+          <h4 className="text-2xl font-semibold ">Find a trip</h4>
+          <form
+            onSubmit={(e) => {
+              submitHandler(e);
+            }}
+          >
+            <div className="line absolute h-16 w-1 top-[45%] left-10 bg-gray-700 rounded-full"></div>
+            <input
+              className="bg-[#eee] px-10 py-2 text-base rounded-lg  w-full  mt-5"
+              type="text"
+              value={pickup}
+              onChange={(e)=>{
+                setPickup(e.target.value)
+              }}
+              placeholder="Add a pick-up location"
+            />
+            <input
+              className="bg-[#eee] px-10 py-2 text-base rounded-lg  w-full  mt-5"
+              type="text"
+              value={destination}
+              onChange={(e)=>{
+                setDestination(e.target.value)
+              }}
+              placeholder="Enter your destination"
+            />
+          </form>
+        </div>
+        <div className="bg-red-500 h-0"></div>
+      </div>
+    </div>
+  );
+};
+
+export default Home;

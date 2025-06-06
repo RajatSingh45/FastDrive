@@ -1,19 +1,43 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { userDataContext } from "../contexts/UserDataContext";
+import { Link, useNavigate } from "react-router-dom";
+import axios from 'axios'
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userData, setUserData] = useState({});
+  const {user, setUser}=useContext(userDataContext)
+  const navigate=useNavigate()
 
-  const submitHandler = (e) => {
+  const submitHandler = async(e) => {
     e.preventDefault();
-    setUserData({
-      email: email,
-      password: password,
-    });
+    const user={
+      email,
+      password
+    }
+    
+     //seding request tom backend server
+     try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/users/login`,
+      user
+    );
 
+    const data = response.data;
+
+    if (response.status === 201 && data.success) {
+      setUser(data.user);
+      localStorage.setItem('token', data.token);
+      navigate("/home");
+    } else {
+      alert(data.message || "Signin failed");
+    }
+  } catch (error) {
+    console.error("Signin error:", error);
+    alert("Something went wrong during signin.");
+  }
     setEmail("");
     setPassword("");
   };
