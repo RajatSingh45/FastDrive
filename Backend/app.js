@@ -9,7 +9,10 @@ import db from "./db/db.js";
 
 db();
 const app = express();
-app.use(cors());
+app.use(cors({
+   origin: 'http://localhost:5173', // or whatever your frontend origin is
+  credentials: true,
+}));
 const port = process.env.PORT || 4000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
