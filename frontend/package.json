@@ -13,8 +13,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "axios": "^1.9.0",
-    "react-router-dom": "^7.6.0"
+    "gsap": "^3.13.0",
+    "react-router-dom": "^7.6.0",
+    "remixicon": "^4.6.0"
   },
   "type": "module",
   "devDependencies": {
