@@ -176,9 +176,6 @@ const Home = () => {
               className="bg-[#eee] px-10 py-2 text-base rounded-lg  w-full  mt-5"
               type="text"
               value={pickup}
-              onClick={() => {
-                setPannelOpen(true);
-              }}
               onChange={(e) => {
                 setPickup(e.target.value);
               }}
@@ -200,7 +197,7 @@ const Home = () => {
 
         </div>
           <div ref={pannelRef} className="bg-white h-0">
-            <SearchPannel setveichleSelection={setveichleSelection} setPannelOpen={setPannelOpen} />
+            <SearchPannel setveichleSelection={setveichleSelection} setPannelOpen={setPannelOpen} setDestination={setDestination}/>
           </div>
           <div
             ref={veichleSelectionRef}
