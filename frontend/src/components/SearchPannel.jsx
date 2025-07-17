@@ -17,7 +17,6 @@ const SearchPannel = (props) => {
               // console.log("Address clicked!");
               props.setveichleSelection(true);
               props.setPannelOpen(false);
-              props.setDestination(loc)
             }}
             className=" mt-0 active:border-2 p-3 active:border-black rounded-xl flex items-center gap-4 my-4 justify-start"
           >

@@ -19,13 +19,13 @@ const Home = () => {
   const [waitingForDriver, setwaitingForDriver] = useState(false)
   // const [adressPannel, setadressPannel] = useState(true)
   const pannelRef = useRef(null);
-  const veichleFoundRef=useRef(null);
-  const pannelCloseRef = useRef(null);
   const veichleSelectionRef = useRef(null);
   const confirmVeichleRef=useRef(null);
+  const veichleFoundRef=useRef(null);
+  const pannelCloseRef = useRef(null);
   const waitingForDriverRef=useRef(null);
 
-  //for animation of pickup and destinations search
+  //for animation of pages
   useGSAP(() => {
     if (pannelOpen) {
       gsap.to(pannelRef.current, {
@@ -51,42 +51,24 @@ const Home = () => {
     if (veichleSelection) {
       gsap.to(veichleSelectionRef.current, {
          transform:'translateY(0)',
-        height: "70%",
-        padding: 24,
-      });
-       gsap.to(veichleSelectionRef.current, {
-        opacity: 1,
       });
     } else {
       gsap.to(veichleSelectionRef.current, {
         transform: "translateY(100%)",
-        height: "0%",
-        padding: 0,
-      });
-       gsap.to(veichleSelectionRef.current, {
-        opacity: 0,
       });
     }
   }, [veichleSelection]);
 
    useGSAP(() => {
     if (confirmVeichle) {
+      console.log("cfv open!")
       gsap.to(confirmVeichleRef.current, {
          transform:'translateY(0)',
-        height: "70%",
-        padding: 24,
-      });
-       gsap.to(confirmVeichleRef.current, {
-        opacity: 1,
       });
     } else {
+      console.log("cfv close!")
       gsap.to(confirmVeichleRef.current, {
         transform: "translateY(100%)",
-        height: "0%",
-        padding: 0,
-      });
-       gsap.to(confirmVeichleRef.current, {
-        opacity: 0,
       });
     }
   }, [confirmVeichle]);
@@ -95,20 +77,10 @@ const Home = () => {
     if (veichleFound) {
       gsap.to(veichleFoundRef.current, {
          transform:'translateY(0)',
-        height: "70%",
-        padding: 24,
-      });
-       gsap.to(veichleFoundRef.current, {
-        opacity: 1,
       });
     } else {
       gsap.to(veichleFoundRef.current, {
         transform: "translateY(100%)",
-        height: "0%",
-        padding: 0,
-      });
-       gsap.to(veichleFoundRef.current, {
-        opacity: 0,
       });
     }
   }, [veichleFound]);
@@ -117,35 +89,39 @@ const Home = () => {
     if (waitingForDriver) {
       gsap.to(waitingForDriverRef.current, {
          transform:'translateY(0)',
-        height: "70%",
-        padding: 24,
-      });
-       gsap.to(waitingForDriverRef.current, {
-        opacity: 1,
       });
     } else {
       gsap.to(waitingForDriverRef.current, {
         transform: "translateY(100%)",
-        height: "0%",
-        padding: 0,
       });
-       gsap.to(waitingForDriverRef.current, {
-        opacity: 0,
-      });
-    }
+    }     
   }, [waitingForDriver]);
 
   const submitHandler = (e) => {
     e.preventDefault();
-  };
+  }
+
+
+  //funtion to  handle back button apperaing on map (to jump back to previous page)
+  const backButtonHandler=()=>{
+      if(confirmVeichle){
+        setConfirmVeichle(false)
+       setTimeout(()=>setveichleSelection(true), 200)
+      }
+      else if(veichleSelection){
+        setveichleSelection(false)
+        setTimeout(()=>setPannelOpen(true), 200)
+      }
+  }
+
   return (
     <div className="h-screen relative">
           <div>
-      <img
-        className="w-16 absolute left-5 top-5"
-        src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png"
-        alt="uber logo"
-      />
+        {
+          (veichleSelection||confirmVeichle) &&(  <h5 onClick={()=>{backButtonHandler()}} className="w-16 absolute left-5 top-5 z-50 ">
+         <i className="ri-arrow-left-long-line"></i>
+       </h5>)
+        }
       <div className="h-screen w-screen">
         <img
           className="h-full w-full object-cover"
@@ -176,6 +152,9 @@ const Home = () => {
               className="bg-[#eee] px-10 py-2 text-base rounded-lg  w-full  mt-5"
               type="text"
               value={pickup}
+               onClick={() => {
+                setPannelOpen(true);
+              }}
               onChange={(e) => {
                 setPickup(e.target.value);
               }}
@@ -196,36 +175,26 @@ const Home = () => {
           </form>
 
         </div>
-          <div ref={pannelRef} className="bg-white h-0">
-            <SearchPannel setveichleSelection={setveichleSelection} setPannelOpen={setPannelOpen} setDestination={setDestination}/>
+          <div ref={pannelRef} className={`bg-white h-0 ${pannelOpen?"":"hidden"}`}>
+            <SearchPannel setveichleSelection={setveichleSelection} setPannelOpen={setPannelOpen}/>
           </div>
           <div
             ref={veichleSelectionRef}
-            className="bg-white h-0 translate-y-full w-full px-3 py-10 pt-14"
+            className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10 pt-12"
           >
-            <h5 onClick={()=>{
-              setveichleSelection(false);
-            }} className="p-1 w-full top-0 absolute flex items-center justify-center"><i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i></h5>
-            <ChooseVeichleOption setConfirmVeichle={setConfirmVeichle} setveichleSelection={setveichleSelection} setPannelOpen={setPannelOpen}/>
+            <ChooseVeichleOption setConfirmVeichle={setConfirmVeichle} setveichleSelection={setveichleSelection}/>
           </div>
           <div
             ref={confirmVeichleRef}
-            className="bg-white h-0 translate-y-full w-full px-3 py-10 pt-14"
+            className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10 pt-12"
           >
             <ConfirmVeichle  setConfirmVeichle={setConfirmVeichle} setveichleFound={setveichleFound}/>
           </div>
             <div
             ref={veichleFoundRef}
-            className="bg-white h-0 translate-y-full w-full px-3 py-10 pt-14"
+            className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10 pt-14"
           >
             <VeichleFound setveichleFound={setveichleFound}/>
-          </div>
-
-           <div
-            ref={waitingForDriverRef}
-            className="bg-white h-0 translate-y-full w-full px-3 py-10 pt-14"
-          >
-            <WaitingForDriver setwaitingForDriver={setwaitingForDriver}/>
           </div>
       </div>
     </div>
