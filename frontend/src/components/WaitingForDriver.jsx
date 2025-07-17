@@ -2,14 +2,6 @@ import React from 'react'
 
 const WaitingForDriver = (props) => {
   return ( <div>
-      <h5
-        className="p-1 text-center w-[93%] absolute top-0"
-        onClick={() => {
-          props.setwaitingForDriver(false);
-        }}
-      >
-        <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
-      </h5>
       <div className='flex items-center justify-between'>
            <img
           src="https://th.bing.com/th/id/OIP.ymjpxr4RPlwbLenCbbpYywHaE7?rs=1&pid=ImgDetMain"

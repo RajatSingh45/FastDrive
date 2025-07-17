@@ -6,9 +6,9 @@ const ChooseVeichleOption = (props) => {
       <h2 className="mb-5 font-semibold text-2xl">Choose your ride</h2>
       <div
         onClick={() => {
+          console.log("veichle selection clicked!")
           props.setConfirmVeichle(true),
-            props.setveichleSelection(false),
-            props.setPannelOpen(false);
+            props.setveichleSelection(false);
         }}
         className="flex border-2 active:border-black mb-2 rounded-xl w-full p-3 items-center justify-between "
       >
@@ -32,8 +32,7 @@ const ChooseVeichleOption = (props) => {
       <div
         onClick={() => {
           props.setConfirmVeichle(true),
-            props.setveichleSelection(false),
-            props.setPannelOpen(false);
+            props.setveichleSelection(false);
         }}
         className="flex border-2 active:border-black mb-2 rounded-xl w-full p-3 items-center justify-between "
       >
@@ -57,8 +56,7 @@ const ChooseVeichleOption = (props) => {
       <div
         onClick={() => {
           props.setConfirmVeichle(true),
-            props.setveichleSelection(false),
-            props.setPannelOpen(false);
+            props.setveichleSelection(false);
         }}
         className="flex border-2 active:border-black mb-2 rounded-xl w-full p-3 items-center justify-between "
       >

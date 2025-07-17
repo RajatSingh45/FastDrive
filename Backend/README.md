@@ -46,7 +46,7 @@ Registers a new user. Validates input, checks for existing users, hashes the pas
 
 ```json
 {
-  "sucess": true,
+  "success": true,
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
     "_id": "60c72b2f9b1e8a001c8e4b8a",
@@ -125,7 +125,7 @@ Logs in a user by validating credentials and returns a JWT token on success.
 
 ```json
 {
-  "sucess": true,
+  "success": true,
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
