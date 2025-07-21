@@ -43,7 +43,7 @@ const getSuggestions=async (input)=>{
    
    try {
        const response=await axios.get(url,{
-        params: { text: input },
+        params: { text: input, 'boundary.country': 'IN' },
         headers: { 
         'Authorization': apiKey,
         'Accept': 'application/json'

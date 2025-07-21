@@ -12,7 +12,7 @@ const routesController = async (req, res) => {
 
   try {
     const result = await getRouteServices(pickupCoords, dropCoords);
-     console.log(result);
+    //  console.log(result);
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch route" });
