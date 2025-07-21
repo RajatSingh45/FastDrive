@@ -6,6 +6,7 @@ import userRouter from "./routers/userRouter.js";
 import captainRouter from './routers/captainRouter.js'
 import cookieParser from 'cookie-parser'
 import db from "./db/db.js";
+import mapRouter from "./routers/mapRouter.js";
 
 db();
 const app = express();
@@ -25,6 +26,7 @@ app.get('/',(req, res) => {
 app.use("/users", userRouter);
 app.use("/captains",captainRouter);
 
+app.use("/maps",mapRouter);
 app.listen(port, () => {
   console.log("App is listening to port 4000!");
 });
