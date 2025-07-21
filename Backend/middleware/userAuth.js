@@ -6,10 +6,11 @@ import blackListTokenModel from '../models/blackListTokenModel.js'
 
 const userAuth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
-  console.log(authHeader);
-  const token = req.cookies.token || (authHeader && authHeader.split(" ")[1]);
+  // console.log(authHeader);
+  // const token = req.cookies.token || (authHeader && authHeader.split(" ")[1]);
+      const token=req.headers['x-auth-token']||req.cookies.token||(authHeader && authHeader.split(" ")[1]);
 //   console.log(req.cookies.token)
-   console.log("Received token in middleware:", token);
+  //  console.log("Received token in middleware:", token);
 
   if (!token) {
     return res.status(401).json({ message: "Unotherized" });
