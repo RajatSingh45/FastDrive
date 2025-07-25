@@ -83,5 +83,5 @@ captainSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-const captainModel = mongoose.model("captain", captainSchema);
+const captainModel = mongoose.model("Captain", captainSchema);
 export default captainModel;
