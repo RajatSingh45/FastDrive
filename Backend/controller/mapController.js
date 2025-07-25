@@ -1,5 +1,5 @@
 import getCoordinates from "../services/coordinateService.js";
-import { getRouteServices,getSuggestions } from "../services/routeinfoServices.js";
+import { getRouteServices,getSuggestions } from "../services/routeInfoServices.js";
 
 const routesController = async (req, res) => {
   const { pickup, drop } = req.body;
@@ -12,7 +12,7 @@ const routesController = async (req, res) => {
 
   try {
     const result = await getRouteServices(pickupCoords, dropCoords);
-    //  console.log(result);
+     console.log(result);
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch route" });
