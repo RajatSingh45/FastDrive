@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
+import {RideDataContext} from "../contexts/rideContext";
 
 const ConfirmVeichle = (props) => {
+  const {selectedVehical}=useContext(RideDataContext)
+  
   return (
     <div>
       <h3 className="text-2xl font-semibold mb-5">Confirm Your Ride</h3>
@@ -15,23 +18,22 @@ const ConfirmVeichle = (props) => {
           <div className="flex items-center gap-5 border-b-2">
             <i className="ri-map-pin-line"></i>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
-              <p className="text-sm -mt-1 text-gray-600">
-                Kirloskar Laoyout, Bangalore, 260090
-              </p>
+              <h1 className="text-sm -mt-1 text-gray-600">
+                {props.pickup}
+              </h1>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 border-b-2">
             <i className="ri-map-pin-line"></i>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
-              <p className="text-sm -mt-1 text-gray-600">Kirloskar Layout</p>
+              {/* <h3 className="text-lg font-medium">562/11-A</h3> */}
+              <h1 className="text-sm -mt-1 text-gray-600">{props.drop}</h1>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3">
             <i className="ri-currency-line"></i>
             <div>
-              <h3 className="text-lg font-medium">Rs200</h3>
+              <h1 className="text-lg font-medium">Rs {props.fares?.[`${selectedVehical}Fare`] ?? "0"}</h1>
               <p className="text-sm -mt-1 text-gray-600">Cash</p>
             </div>
           </div>
@@ -40,6 +42,7 @@ const ConfirmVeichle = (props) => {
         onClick={()=>{
           props.setConfirmVeichle(false)
           props.setveichleFound(true)
+          props.createRide()
         }}
         className="w-full bg-green-600 font-semibold p-2 rounded-lg">
           Confirm

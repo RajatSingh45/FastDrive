@@ -22,9 +22,15 @@ const routesController = async (req, res) => {
 const suggestionController=async (req,res)=>{
     const {input}=req.query
 
+     if (!input || input.trim() === "") {
+    return res.status(400).json({ error: "Input is required" });
+  }
+
     try {
         const suggestion=await getSuggestions(input)
-        
+         if(!suggestion){
+          return res.status(500).json({error:"suggestion not get"})
+         }
         res.status(200).json(suggestion)
     } catch (error) {
         console.log(error)
