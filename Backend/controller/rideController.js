@@ -1,4 +1,4 @@
-import createRide from "../services/rideService.js";
+import  { createRide,getAllVehicalsFare } from "../services/rideService.js";
 import {validationResult} from 'express-validator' 
 
 const rideController=async (req,res)=>{
@@ -14,6 +14,7 @@ const rideController=async (req,res)=>{
 
     if(!pickup||!drop||!veichleType)
       return res.status(500).json({error:"All feilds are required"});
+
 
     const user=req.user?._id;
     if(!user)
@@ -32,4 +33,28 @@ const rideController=async (req,res)=>{
 
 }
 
-export default rideController
+
+const fareController=async(req,res)=>{
+   const errors=validationResult(req);
+
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors:errors.array()})
+    }
+
+    const {pickup,drop}=req.query;
+
+    if(!pickup||!drop){
+        return res.status(500).json({error:"Required both address"})
+    }
+
+    try {
+        const fares=await getAllVehicalsFare(pickup,drop);
+        return res.status(200).json(fares)
+
+    } catch (error) {
+        console.log("unable to fetch fare:",error)
+        return res.status(400).json({error:"something went wrong"});
+    }
+}
+
+export  {rideController,fareController}

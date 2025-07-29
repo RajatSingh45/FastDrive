@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
+ import { RideDataContext } from "../contexts/rideContext";
 
 const ChooseVeichleOption = (props) => {
+   const {setSelectedVehical}=useContext(RideDataContext)
   return (
     <div>
       <h2 className="mb-5 font-semibold text-2xl">Choose your ride</h2>
       <div
         onClick={() => {
-          console.log("veichle selection clicked!")
           props.setConfirmVeichle(true),
             props.setveichleSelection(false);
+             setSelectedVehical("car")
         }}
         className="flex border-2 active:border-black mb-2 rounded-xl w-full p-3 items-center justify-between "
       >
@@ -27,12 +29,13 @@ const ChooseVeichleOption = (props) => {
           <h5 className="font-medium text-sm">2 mins away</h5>
           <p className="font-medium text-xs ">Affordable, compact rides</p>
         </div>
-        <h2 className="text-xl font-semibold pb-9">rs200.00</h2>
+        <h2 className="text-xl font-semibold pb-9">Rs{props.fares.carFare}</h2>
       </div>
       <div
         onClick={() => {
           props.setConfirmVeichle(true),
             props.setveichleSelection(false);
+             setSelectedVehical("moto")
         }}
         className="flex border-2 active:border-black mb-2 rounded-xl w-full p-3 items-center justify-between "
       >
@@ -43,7 +46,7 @@ const ChooseVeichleOption = (props) => {
         />
         <div className=" w-1/2">
           <h4 className="font-medium text-sm">
-            FastDriveGo{" "}
+            FastDriveMoto{" "}
             <span>
               <i className="ri-user-fill"></i>1
             </span>
@@ -51,12 +54,13 @@ const ChooseVeichleOption = (props) => {
           <h5 className="font-medium text-sm">2 mins away</h5>
           <p className="font-medium text-xs ">Affordable, compact rides</p>
         </div>
-        <h2 className="text-xl font-semibold pb-9">rs200.00</h2>
+        <h2 className="text-xl font-semibold pb-9">Rs{props.fares.motoFare}</h2>
       </div>
       <div
         onClick={() => {
           props.setConfirmVeichle(true),
             props.setveichleSelection(false);
+             setSelectedVehical("auto")
         }}
         className="flex border-2 active:border-black mb-2 rounded-xl w-full p-3 items-center justify-between "
       >
@@ -67,7 +71,7 @@ const ChooseVeichleOption = (props) => {
         />
         <div className=" w-1/2">
           <h4 className="font-medium text-sm">
-            FastDriveGo{" "}
+            FastDriveAuto{" "}
             <span>
               <i className="ri-user-fill"></i>3
             </span>
@@ -75,7 +79,7 @@ const ChooseVeichleOption = (props) => {
           <h5 className="font-medium text-sm">2 mins away</h5>
           <p className="font-medium text-xs ">Affordable, compact rides</p>
         </div>
-        <h2 className="text-xl font-semibold pb-9">rs200.00</h2>
+        <h2 className="text-xl font-semibold pb-9">Rs{props.fares.autoFare}</h2>
       </div>
     </div>
   );
