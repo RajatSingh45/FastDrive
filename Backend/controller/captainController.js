@@ -3,8 +3,14 @@ import { validationResult } from "express-validator";
 import blackListTokenModel from "../models/blackListTokenModel.js";
 
 const captainRegister = async (req, res) => {
+
   try {
     const { fullname, email, password, veichle } = req.body;
+    //check validation
+    const validateError = validationResult(req);
+    if (!validateError.isEmpty()) {
+      return res.json({ success: false, message: validateError.array() });
+    }
 
     //check all field
     if (
@@ -19,11 +25,6 @@ const captainRegister = async (req, res) => {
       return res.json({ message: "All fields are required" });
     }
 
-    //check validation
-    const validateError = validationResult(req);
-    if (!validateError.isEmpty()) {
-      return res.json({ success: false, message: validateError.array() });
-    }
 
     //checking if captain already exist or not
     const captainExist = await captainModel.findOne({ email });
@@ -83,7 +84,7 @@ const captainLogin = async (req, res) => {
     res.cookie("token", token);
     // console.log(cookie)
 
-    res.status(201).json({ success: true, token });
+    res.status(201).json({ success: true, token,captain });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }

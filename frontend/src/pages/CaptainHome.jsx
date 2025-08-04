@@ -1,11 +1,14 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import CaptainDetails from "../components/CaptainDetails";
 import CaptainNewRide from "../components/CaptainNewRide";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import CaptainConfirmRide from "../components/CaptainConfirmRide";
+
+
 const CaptainHome = () => {
+  
   // States
   const [ridePopUp, setridePopUp] = useState(true);
   const [confirmRide, setconfirmRide] = useState(false)
@@ -64,12 +67,12 @@ const CaptainHome = () => {
       <div className="h-3/5 p-6">
         <CaptainDetails />
       </div>
-      <div
+      {/* <div
         ref={ridePopUpRef}
         className="fixed w-full z-10 bottom-0 bg-white px-3 py-10 pt-12 translate-y-full"
       >
         <CaptainNewRide setridePopUp={setridePopUp}  setconfirmRide={setconfirmRide}/>
-      </div>
+      </div> */}
 
        <div
         ref={confirmRideRef}

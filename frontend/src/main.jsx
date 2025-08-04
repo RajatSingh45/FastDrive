@@ -9,15 +9,14 @@ import RideContextProvider from './contexts/rideContext.jsx'
 
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+
     <CaptainDataContext>
-    <BrowserRouter>
     <UserContext>
     <RideContextProvider>
+    <BrowserRouter>
       <App />
+    </BrowserRouter>
     </RideContextProvider>
     </UserContext>
-    </BrowserRouter>
     </CaptainDataContext>
-  </StrictMode>,
 )
