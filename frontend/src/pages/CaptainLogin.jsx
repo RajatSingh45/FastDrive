@@ -13,7 +13,7 @@ const CaptainLogin = () => {
     e.preventDefault();
     const signInCaptain = {
       email: email,
-      password: password,
+      password
     };
 
     //calling backend
@@ -22,16 +22,20 @@ const CaptainLogin = () => {
       `${import.meta.env.VITE_BASE_URL}/captains/login`,
       signInCaptain
     );
-     
-    //console.log('in frontend')
-    const data = response.data;
+    
+    console.log("response in login:",response);
+    
+    if (response.status === 201) {
+      const data = response.data;
+    console.log("login success:",data.captain);
 
-    if (response.status === 201 && data.success) {
-      setCaptain(data.captain);
+       setCaptain(data.captain);
+  
+      //  localStorage.setItem('captain', JSON.stringify(data.captain));
       localStorage.setItem('token', data.token);
       navigate("/captain-home");
     } else {
-      alert(data.message || "Signup failed");
+      alert(data.message || "Signin failed");
     }
   } catch (error) {
     console.error("Signup error:", error.response?.data ||error.message);

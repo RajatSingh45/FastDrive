@@ -1,9 +1,11 @@
 import axios from "axios";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { captainContext } from "../contexts/CaptainDataContext";
 
 const CaptainLogout = () => {
   const navigate = useNavigate();
+  const {captain}=useContext(captainContext)
   
   useEffect(() => {
      const token = localStorage.getItem("token");
@@ -21,6 +23,7 @@ const CaptainLogout = () => {
 
          console.log("token sent to backend");
         localStorage.removeItem("token");
+        localStorage.removeItem("captain")
         navigate("/captain-login");
       }
     })

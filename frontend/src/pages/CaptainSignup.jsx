@@ -5,13 +5,13 @@ import { captainContext } from "../contexts/CaptainDataContext";
 
 const CaptainSignup = () => {
 
-  const{captain,setCaptain,updateCaptain}=useContext(captainContext)
+  const{captain,setCaptain}=useContext(captainContext)
   const navigate=useNavigate()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [Firstname, setFtistname] = useState("");
   const [Lastname, setLastname] = useState("");
-  const [userData, setUserData] = useState({});
+  // const [userData, setUserData] = useState({});
   const [veichleColor, setVeichleColor] = useState("");
   const [veichlePlate, setVeichlePlate] = useState("");
   const [veichleCapacity, setVeichleCapacity] = useState("");
@@ -19,6 +19,7 @@ const CaptainSignup = () => {
 
   const submitHandler = async(e) => {
     e.preventDefault();
+
    const newCaptain={
       fullname: {
         firstname: Firstname,
@@ -38,13 +39,14 @@ const CaptainSignup = () => {
     const response = await axios.post(
       `${import.meta.env.VITE_BASE_URL}/captains/register`,
       newCaptain
-    );
-
-    const data = response.data;
-
-
-    if (response.status === 201 && data.success) {
+    );    
+    
+    if (response.status === 201) {
+      const data = response.data;
+      console.log("captain name during signup:",data?.captain?.fullname)
       setCaptain(data.captain);
+      console.log("captain in signup:",captain)
+    //  localStorage.setItem('captain', JSON.stringify(data.captain));
       localStorage.setItem('token', data.token);
       navigate("/captain-home");
     } else {
@@ -58,6 +60,10 @@ const CaptainSignup = () => {
     setPassword("");
     setFtistname("");
     setLastname("");
+    setVeichleColor("")
+    setVeichleCapacity("")
+    setVeichlePlate("")
+    setVeichleType("")
   };
   return (
     <div className="p-7 flex flex-col justify-between h-scree">
@@ -81,7 +87,7 @@ const CaptainSignup = () => {
               className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
               type="text"
               placeholder="First Name"
-              reqiured
+              required
             />
             <input
               value={Lastname}
@@ -102,7 +108,7 @@ const CaptainSignup = () => {
             className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
             type="email"
             placeholder="email@example.com"
-            reqiured
+            required
           />
           <h3 className="text-lg font-medium mb-2">Enter Password</h3>
           <input
@@ -113,7 +119,7 @@ const CaptainSignup = () => {
             className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
             type="password"
             placeholder="password"
-            required
+          required
           />
           <h3 className="text-lg font-medium mb-2">Veichle Details</h3>
           <div className="flex gap-4">

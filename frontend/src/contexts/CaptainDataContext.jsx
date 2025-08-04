@@ -1,31 +1,37 @@
-import React, { createContext, useState } from 'react'
+import { createContext, useState, useEffect } from "react";
 
-export const captainContext=createContext();
+export const captainContext = createContext();
 
-
-const CaptainDataContext = ({children}) => {
-    const [captain,setCaptain]=useState(null)
-    const [isLoading,setIsLoading]=useState(false)
-    const [error,setError]=useState(null)
-
-    const updateCaptain=(captainData)=>{
-        setCaptain(captainData)
+const CaptainDataContext = ({ children }) => {
+  const [captain, setCaptain] = useState(() => {
+    const stored = localStorage.getItem("captain");
+    if (!stored || stored === "undefined") return null;
+    try{
+      return JSON.parse(stored);
+    }catch{
+      return null;
     }
+  });
 
-    const values={
-        captain,
-        setCaptain,
-        isLoading,
-        setIsLoading,
-        error,
-        setError,
-        updateCaptain
+  useEffect(() => {
+    if (captain) {
+      console.log("captain in context:",captain);
+      localStorage.setItem("captain", JSON.stringify(captain));
+    } else {
+      localStorage.removeItem("captain");
     }
+  }, [captain]);
+
+  console.log("captain in context:",captain);
+  const values = {
+    captain,
+    setCaptain,
+  };
   return (
     <captainContext.Provider value={values}>
-       {children}
+      {children}
     </captainContext.Provider>
-  )
-}
+  );
+};
 
-export default CaptainDataContext
+export default CaptainDataContext;
