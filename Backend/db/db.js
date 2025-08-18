@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 const db = async () => {
   //it will just console log DB connected whenever there is connection  established
   mongoose.connection.on("connected", () => {
-    console.log("DB connected");
+    console.log("DB connected:",mongoose.connection.name);
   });
   mongoose.connection.on("error", (err) => {
     console.error("DB connection error:", err);
