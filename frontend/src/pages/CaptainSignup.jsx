@@ -43,14 +43,14 @@ const CaptainSignup = () => {
     
     if (response.status === 201) {
       const data = response.data;
-      console.log("captain name during signup:",data?.captain?.fullname)
+      // console.log("captain name during signup:",data.captain.fullname)
       setCaptain(data.captain);
-      console.log("captain in signup:",captain)
-    //  localStorage.setItem('captain', JSON.stringify(data.captain));
-      localStorage.setItem('token', data.token);
+      // console.log("captain in signup:",captain)
+      // localStorage.setItem('captain', JSON.stringify(response.data.captain));
+      localStorage.setItem('token',data.token);
       navigate("/captain-home");
     } else {
-      alert(data.message || "Signup failed");
+      alert(response.dats.message || "Signup failed");
     }
   } catch (error) {
     console.error("Signup error:", error);

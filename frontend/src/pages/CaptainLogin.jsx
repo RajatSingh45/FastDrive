@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { captainContext } from "../contexts/CaptainDataContext";
@@ -7,7 +7,7 @@ const CaptainLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const {captain,setCaptain}=useContext(captainContext)
+  const { captain, setCaptain } = useContext(captainContext);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -27,23 +27,23 @@ const CaptainLogin = () => {
     
     if (response.status === 201) {
       const data = response.data;
-    console.log("login success:",data.captain);
-
-       setCaptain(data.captain);
-  
-      //  localStorage.setItem('captain', JSON.stringify(data.captain));
+      setCaptain(data.captain);
+      console.log("data.captain->",data.captain);
+      localStorage.setItem('captain', JSON.stringify(data.captain));
+      console.log("local storage:",localStorage.getItem('captain'));
       localStorage.setItem('token', data.token);
       navigate("/captain-home");
     } else {
       alert(data.message || "Signin failed");
     }
-  } catch (error) {
+  } catch (error) {  
     console.error("Signup error:", error.response?.data ||error.message);
     alert("Something went wrong during signin.");
   }
     setEmail("");
     setPassword("");
   };
+  
   return (
     <div className="p-7 flex flex-col justify-between h-scree">
       <div>

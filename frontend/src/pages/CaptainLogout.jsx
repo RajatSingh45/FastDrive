@@ -21,7 +21,7 @@ const CaptainLogout = () => {
     .then((response) => {
       if (response.status === 200) {
 
-         console.log("token sent to backend");
+        //  console.log("token sent to backend");
         localStorage.removeItem("token");
         localStorage.removeItem("captain")
         navigate("/captain-login");
