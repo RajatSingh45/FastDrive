@@ -2,14 +2,20 @@ import React, { useContext, useEffect, useState } from "react";
 import { captainContext } from "../contexts/CaptainDataContext";
 
 const CaptainDetails = () => {
-const { captain } = useContext(captainContext);
+// const { captain } = useContext(captainContext);
+const [captain,setCaptain]=useState(null)
 
 useEffect(() => {
-  console.log("captain name in details (effect):", captain);
-}, [captain]);
+  const storedCaptain = localStorage.getItem('captain');
+  if (storedCaptain) {
+    setCaptain(JSON.parse(storedCaptain));
+  } else {
+    setCaptain(null);
+  }
+  // console.log("captain in details:", storedCaptain);
+}, [])
 
-console.log("captain name in details:", captain);
-  if (!captain) return <p>No captain data available...</p>;
+   if (!captain) return <p>No captain data available...</p>;
 
 
   return (
