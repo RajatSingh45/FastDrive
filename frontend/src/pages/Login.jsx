@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useState } from "react";
-import { userDataContext } from "../contexts/UserDataContext";
+import { userDataContext } from "../contexts/userDataContext";
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios'
 
@@ -8,8 +8,10 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userData, setUserData] = useState({});
-  const {user, setUser}=useContext(userDataContext)
+  const {setUser}=useContext(userDataContext)
   const navigate=useNavigate()
+
+  
 
   const submitHandler = async(e) => {
     e.preventDefault();
@@ -26,10 +28,13 @@ const Login = () => {
     );
 
     const data = response.data;
+    // console.log("response:",response);
 
     if (response.status === 201 && data.success) {
       setUser(data.user);
+      // console.log("user while login:",data.user);
       localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user))
       navigate("/home");
     } else {
       alert(data.message || "Signin failed");

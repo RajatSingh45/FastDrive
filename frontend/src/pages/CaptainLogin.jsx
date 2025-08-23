@@ -23,14 +23,14 @@ const CaptainLogin = () => {
       signInCaptain
     );
     
-    console.log("response in login:",response);
+    // console.log("response in login:",response);
     
     if (response.status === 201) {
       const data = response.data;
       setCaptain(data.captain);
-      console.log("data.captain->",data.captain);
+      // console.log("data.captain->",data.captain);
       localStorage.setItem('captain', JSON.stringify(data.captain));
-      console.log("local storage:",localStorage.getItem('captain'));
+      // console.log("local storage:",localStorage.getItem('captain'));
       localStorage.setItem('token', data.token);
       navigate("/captain-home");
     } else {

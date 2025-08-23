@@ -15,7 +15,7 @@ app.use(cors({
    origin: 'http://localhost:5173', // or whatever your frontend origin is
   credentials: true,
 }));
-const port = process.env.PORT || 4000;
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
@@ -29,6 +29,6 @@ app.use("/captains",captainRouter);
 
 app.use("/maps",mapRouter);
 app.use("/rides",rideRouter)
-app.listen(port, () => {
-  console.log("App is listening to port 4000!");
-});
+
+
+export default app

@@ -25,7 +25,7 @@ const CaptainDataContext = ({ children }) => {
     if (captain) {
       localStorage.setItem("captain", JSON.stringify(captain));
     } 
-    console.log("captain in context:", captain);
+    // console.log("captain in context:", captain);
   }, [captain]);
 
   const updateCaptain = (captainData) => {

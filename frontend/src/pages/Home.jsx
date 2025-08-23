@@ -9,9 +9,12 @@ import ConfirmVeichle from "../components/ConfirmVeichle";
 import VeichleFound from "../components/veichleFound";
 import WaitingForDriver from "../components/WaitingForDriver";
 import { RideDataContext } from "../contexts/rideContext";
+import { userDataContext } from "../contexts/userDataContext";
+import { socketContext } from "../contexts/SocketContext";
 // import ChooseVeichleOption from "../components/ChooseVeichleOption";
 
 const Home = () => {
+  //useStates
   const [pickup, setPickup] = useState("");
   const [drop, setDrop] = useState("");
   const [pannelOpen, setPannelOpen] = useState(false);
@@ -20,6 +23,12 @@ const Home = () => {
   const [veichleFound, setveichleFound] = useState(false);
   const [waitingForDriver, setwaitingForDriver] = useState(false);
   // const [adressPannel, setadressPannel] = useState(true)
+  const [activeField, setActiveField] = useState("");
+  const [pickupSuggestions, setPickupSuggestions] = useState([]);
+  const [dropSuggestions, setDropSuggestions] = useState([]);
+  const [fares, setFares] = useState({})
+
+  //useRefs
   const pannelRef = useRef(null);
   const veichleSelectionRef = useRef(null);
   const confirmVeichleRef = useRef(null);
@@ -27,12 +36,20 @@ const Home = () => {
   const pannelCloseRef = useRef(null);
   const waitingForDriverRef = useRef(null);
 
-  const [activeField, setActiveField] = useState("");
-  const [pickupSuggestions, setPickupSuggestions] = useState([]);
-  const [dropSuggestions, setDropSuggestions] = useState([]);
-  const [fares, setFares] = useState({})
 
+  //useContexts
   const {selectedVehical}=useContext(RideDataContext)
+  const {user}=useContext(userDataContext)
+  const {socket}=useContext(socketContext)
+
+  //emiting join event to join socket
+  useEffect(() => {
+    // console.log("user in home:-",user)
+    if(user&&user._id){
+      socket.emit("join",{userId:user._id,userType:"user"})
+    }
+  }, [user])
+  
 
   //for animation of pages
   useGSAP(() => {
@@ -165,7 +182,7 @@ const Home = () => {
 
       // console.log(response.data);
       if (!response) {
-        console.log("Dsuggestion not get ");
+        console.log("suggestion not get ");
       }
 
       setDropSuggestions(response.data);
