@@ -1,10 +1,11 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import CaptainDetails from "../components/CaptainDetails";
 import CaptainNewRide from "../components/CaptainNewRide";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import CaptainConfirmRide from "../components/CaptainConfirmRide";
+import { socketContext } from "../contexts/SocketContext";
 
 
 const CaptainHome = () => {
@@ -17,6 +18,53 @@ const CaptainHome = () => {
   const ridePopUpRef = useRef(null);
   const confirmRideRef=useRef(null)
 
+  //useContexts
+  const {socket}=useContext(socketContext)
+
+  //emiting join event to join socket
+  useEffect(() => {
+    const captain=JSON.parse(localStorage.getItem('captain'));
+
+    if(captain){
+      // console.log("Emitting join")
+      socket.emit("join",{userId:captain._id,userType:"captain"})
+
+      // Send location every 10 seconds
+      const sendLocation = () => {
+        navigator.geolocation.getCurrentPosition(   //a browser api that lets you access user's device location
+          (position) => {
+            // console.log({
+            //   lat: position.coords.latitude,
+            //   lng: position.coords.longitude,
+            // })
+            
+            const location = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+            socket.emit("update-captain-loc", {
+              userId: captain._id,
+              location,
+            });
+          },
+          (error) => {
+            console.error("Geolocation error:", error);
+          }
+        );
+      };
+
+      sendLocation(); // Initial send
+      const intervalId = setInterval(sendLocation, 10000); // Every 15 seconds
+
+      return () => clearInterval(intervalId);
+    }
+  }, [socket])
+  
+  // provide new-ride data to cpatin whenever avilable
+  socket.on("new-ride",(data)=>{
+    console.log("new ride data for captain:",data);
+  });
+  
   // GSAP animation code
   useGSAP(() => {
     if (ridePopUp) {

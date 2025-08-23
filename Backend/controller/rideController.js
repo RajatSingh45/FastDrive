@@ -1,60 +1,75 @@
-import  { createRide,getAllVehicalsFare } from "../services/rideService.js";
-import {validationResult} from 'express-validator' 
+import { getNearByCaptains } from "../services/coordinateService.js";
+import { createRide, getAllVehicalsFare } from "../services/rideService.js";
+import { validationResult } from "express-validator";
+import { sendMessageToSocketId } from "../socket/socket.js";
 
-const rideController=async (req,res)=>{
+const rideController = async (req, res) => {
+  try {
+    const errors = validationResult(req);
 
-    const errors=validationResult(req);
-
-    if(!errors.isEmpty()){
-        return res.status(400).json({errors:errors.array()})
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
+    const { pickup, drop, veichleType } = req.body;
 
-    const {pickup,drop,veichleType}=req.body;
+    if (!pickup || !drop || !veichleType)
+      return res.status(500).json({ error: "All feilds are required" });
 
-    if(!pickup||!drop||!veichleType)
-      return res.status(500).json({error:"All feilds are required"});
+    const user = req.user?._id;
+    if (!user) return res.status(500).json({ error: "user is unautherized" });
 
+    const ride = await createRide(user, pickup, drop, veichleType);
+    if (!ride) return res.status(500).json({ error: "ride not created" });
 
-    const user=req.user?._id;
-    if(!user)
-        return res.status(500).json({error:"user is unautherized"})
-
-     try {
-         const ride=await createRide(user,pickup,drop,veichleType);
-         if(!ride)
-          return res.status(500).json({error:"ride not get"});
-        
-         return res.status(201).json({ride});        
-     } catch (error) {
-        console.log("ride creation failed:",error);
-        return res.status(400).json({error:"something went wrong"});
-     }
-
-}
-
-
-const fareController=async(req,res)=>{
-   const errors=validationResult(req);
-
-    if(!errors.isEmpty()){
-        return res.status(400).json({errors:errors.array()})
-    }
-
-    const {pickup,drop}=req.query;
-
-    if(!pickup||!drop){
-        return res.status(500).json({error:"Required both address"})
-    }
+    res.status(201).json({ ride });
 
     try {
-        const fares=await getAllVehicalsFare(pickup,drop);
-        return res.status(200).json(fares)
+      const captainsAvialable = await getNearByCaptains(pickup, 5);
 
-    } catch (error) {
-        console.log("unable to fetch fare:",error)
-        return res.status(400).json({error:"something went wrong"});
+      if (captainsAvialable.length === 0) {
+        // Optionally update ride status in DB here
+        return res.status(201).json({
+          ride,
+          message: "No captains available nearby. Your ride is pending.",
+        });
+      }
+
+      ride.otp = ""; //captain should not get the otp before reaching the user
+
+      captainsAvialable.forEach((captain) => {
+        sendMessageToSocketId(captain.socketId, "new-ride", ride);
+      });
+      
+    } catch (notifyError) {
+      console.error("Failed to notify cpatains:", notifyError);
     }
-}
+  } catch (error) {
+    console.log("ride creation failed:", error);
+    return res.status(400).json({ error: "something went wrong" });
+  }
+};
 
-export  {rideController,fareController}
+const fareController = async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { pickup, drop } = req.query;
+
+  if (!pickup || !drop) {
+    return res.status(500).json({ error: "Required both address" });
+  }
+
+  try {
+    const fares = await getAllVehicalsFare(pickup, drop);
+    return res.status(200).json(fares);
+  } catch (error) {
+    console.log("unable to fetch fare:", error);
+    return res.status(400).json({ error: "something went wrong" });
+  }
+};
+
+export { rideController, fareController };
