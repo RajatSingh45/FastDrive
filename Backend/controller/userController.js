@@ -70,7 +70,9 @@ const userLogin = async (req,res) => {
     res.cookie('token',token)
     // console.log(cookie)
 
-    res.status(201).json({success:true,token});
+    // console.log("user in backend:",user);
+
+    res.status(201).json({success:true,token,user});
     } catch (error) {
         // console.log(error);
         res.status(400).json({success:false,message:error.message});

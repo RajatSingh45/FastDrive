@@ -1,4 +1,4 @@
-import getCoordinates from "../services/coordinateService.js";
+import {getCoordinates} from "../services/coordinateService.js";
 import { getRouteServices,getSuggestions } from "../services/routeInfoServices.js";
 
 const routesController = async (req, res) => {

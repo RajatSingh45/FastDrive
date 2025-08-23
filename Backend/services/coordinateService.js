@@ -1,4 +1,5 @@
 import axios from "axios";
+import captainModel from "../models/captainModel.js";
 
 const getCoordinates = async (address) => {
   const apiKey = process.env.MAP_API_KEY;
@@ -14,4 +15,19 @@ const getCoordinates = async (address) => {
   }
 };
 
-export default getCoordinates;
+const getNearByCaptains=async(pickup,radius)=>{
+
+  const pickupCoords=getCoordinates(pickup);
+  console.log("pickupCoords for near by captains:",pickupCoords);
+  const captains=await captainModel.find({
+     location: {
+            $geoWithin: {
+                $centerSphere: [ [ pickupCoords.ltd, pickupCoords.lng ], radius / 6371 ]  //in km
+            }
+        }
+  })
+
+  return captains
+}
+
+export {getCoordinates,getNearByCaptains};

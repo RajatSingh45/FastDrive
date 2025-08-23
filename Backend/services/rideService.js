@@ -1,5 +1,5 @@
 import { getRouteServices } from "./routeInfoServices.js";
-import getCoordinates from "./coordinateService.js";
+import {getCoordinates} from "./coordinateService.js";
 import rideModel from "../models/ridesModel.js";
 import crypto from "crypto";
 
@@ -122,5 +122,6 @@ const createRide = async (user, pickup, drop, veichleType) => {
     throw new Error(error.message);
   }
 };
+
 
 export { createRide, getAllVehicalsFare };
