@@ -2,11 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Fast-Drive",
-  "main": "app.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app"
+    "dev": "nodemon server"
   },
   "author": "Rajat",
   "license": "ISC",

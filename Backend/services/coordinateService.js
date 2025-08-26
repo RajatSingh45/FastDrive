@@ -15,19 +15,20 @@ const getCoordinates = async (address) => {
   }
 };
 
-const getNearByCaptains=async(pickup,radius)=>{
+const getNearByCaptains = async (lng, lat, radius) => {
+  if (typeof lng !== "number" || typeof lat !== "number") {
+    throw new Error("Invalid coordinates for nearby captain search");
+  }
+  
+  const captains = await captainModel.find({
+    location: {
+      $geoWithin: {
+        $centerSphere: [[lng, lat], radius / 6371], // [lng, lat]
+      },
+    },
+  });
+  // console.log("captains in services:", captains);
+  return captains;
+};
 
-  const pickupCoords=getCoordinates(pickup);
-  console.log("pickupCoords for near by captains:",pickupCoords);
-  const captains=await captainModel.find({
-     location: {
-            $geoWithin: {
-                $centerSphere: [ [ pickupCoords.ltd, pickupCoords.lng ], radius / 6371 ]  //in km
-            }
-        }
-  })
-
-  return captains
-}
-
-export {getCoordinates,getNearByCaptains};
+export { getCoordinates, getNearByCaptains };
