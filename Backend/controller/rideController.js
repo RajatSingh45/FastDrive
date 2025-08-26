@@ -35,7 +35,7 @@ const rideController = async (req, res) => {
     // Use array indices for lng and lat
     const captainsAvialable = await getNearByCaptains(pickupCoords[0], pickupCoords[1], 5);
 
-    // console.log("cpatins in controller:",captainsAvialable);
+    console.log("cpatins in controller:",captainsAvialable);
 
     if (captainsAvialable.length === 0) {
       // Optionally update ride status in DB here
