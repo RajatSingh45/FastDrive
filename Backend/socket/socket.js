@@ -17,10 +17,12 @@ const intializeSocket = (server) => {
 
     //UPDATE SOCKETID BASED ON USER TYPE
     socket.on("join", async (data) => {
-      const {userId,userType}=data;
-      console.log(`New ${userType} with socket id ${socket.id} has joined server`)
+      const { userId, userType } = data;
+      console.log(
+        `New ${userType} with socket id ${socket.id} has joined server`
+      );
       if (userType === "user") {
-         console.log("user id:",userId);
+        //  console.log("user id:",userId);
         await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
       } else if (userType === "captain") {
         await captainModel.findByIdAndUpdate(userId, { socketId: socket.id });
@@ -29,7 +31,7 @@ const intializeSocket = (server) => {
 
     //UPDATE CAPTAIN LOCATION EVERY 15SEC
     socket.on("update-captain-loc", async (data) => {
-      const {userId,location}=data;
+      const { userId, location } = data;
 
       if (!location || !location.lat || !location.lng) {
         return socket.emit("error", { message: "Invalid location" });
@@ -38,7 +40,10 @@ const intializeSocket = (server) => {
       //update the cpatain location in db
       // console.log("hit update location function")
       await captainModel.findByIdAndUpdate(userId, {
-        location: { lat: location.lat, lng: location.lng },
+        location: {
+          type: "Point",
+          coordinates: [location.lng, location.lat], // Order matters!
+        },
       });
     });
 
