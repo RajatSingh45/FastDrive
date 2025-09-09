@@ -40,6 +40,7 @@ const ConfirmVeichle = (props) => {
         </div>
         <button 
         onClick={()=>{
+          console.log("confirm clicked!")
           props.setConfirmVeichle(false)
           props.setveichleFound(true)
           props.createRide()
