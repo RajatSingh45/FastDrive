@@ -11,6 +11,7 @@ import WaitingForDriver from "../components/WaitingForDriver";
 import { RideDataContext } from "../contexts/rideContext";
 import { userDataContext } from "../contexts/userDataContext";
 import { socketContext } from "../contexts/SocketContext";
+import { useNavigate } from "react-router-dom";
 // import ChooseVeichleOption from "../components/ChooseVeichleOption";
 
 const Home = () => {
@@ -27,6 +28,7 @@ const Home = () => {
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [dropSuggestions, setDropSuggestions] = useState([]);
   const [fares, setFares] = useState({})
+  const [ride,setRide]=useState(null)
 
   //useRefs
   const pannelRef = useRef(null);
@@ -42,6 +44,9 @@ const Home = () => {
   const {user}=useContext(userDataContext)
   const {socket}=useContext(socketContext)
 
+  //useNavigate
+  const navigate=useNavigate()
+
   //emiting join event to join socket
   useEffect(() => {
     // console.log("user in home:-",user)
@@ -49,6 +54,18 @@ const Home = () => {
       socket.emit("join",{userId:user._id,userType:"user"})
     }
   }, [user])
+
+  socket.on('ride-confirm',ride=>{
+      setveichleFound(false);
+      setwaitingForDriver(true);
+      setRide(ride);
+  })
+
+  socket.on('ride-started',ride=>{
+    console.log("start ride on frontend")
+    setwaitingForDriver(false)
+    navigate('/riding',{state:{ride}})
+  })
   
 
   //for animation of pages
@@ -226,6 +243,7 @@ const Home = () => {
 
   //function to create a ride
   const createRide=async ()=>{
+    console.log("confirm clicked at home!");
     try {
       const ride=await axios.post( `${import.meta.env.VITE_BASE_URL}/rides/create-ride`,
         {
@@ -368,13 +386,24 @@ const Home = () => {
             pickup={pickup}
             drop={drop}
             createRide={createRide}
+            ride={ride}
           />
         </div>
         <div
           ref={veichleFoundRef}
           className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10 pt-14"
         >
-          <VeichleFound setveichleFound={setveichleFound} fares={fares} pickup={pickup} drop={drop}/>
+          <VeichleFound setveichleFound={setveichleFound} fares={fares} pickup={pickup} drop={drop} ride={ride}/>
+        </div>
+        <div
+          ref={waitingForDriverRef}
+          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10 pt-14"
+        >
+          <WaitingForDriver
+            ride={ride}
+            setveichleFound={setveichleFound}
+            setwaitingForDriver={setwaitingForDriver}
+          />
         </div>
       </div>
     </div>

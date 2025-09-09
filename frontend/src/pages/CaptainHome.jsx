@@ -6,13 +6,15 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import CaptainConfirmRide from "../components/CaptainConfirmRide";
 import { socketContext } from "../contexts/SocketContext";
+import axios from 'axios'
 
 
 const CaptainHome = () => {
   
   // States
-  const [ridePopUp, setridePopUp] = useState(true);
+  const [ridePopUp, setridePopUp] = useState(false);
   const [confirmRide, setconfirmRide] = useState(false)
+  const [newRide,setNewRide]=useState(null)
 
   // useRefs
   const ridePopUpRef = useRef(null);
@@ -63,7 +65,32 @@ const CaptainHome = () => {
   // provide new-ride data to cpatin whenever avilable
   socket.on("new-ride",(data)=>{
     console.log("new ride data for captain:",data);
+    setridePopUp(true);
+    setNewRide(data)
   });
+
+  //confirm th ride
+  const confirmRideHandler=async ()=>{
+    try {
+      const captain=JSON.parse(localStorage.getItem('captain'));
+      console.log("captain in  forntend:",captain)
+      const response=await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm-ride`,{
+        rideId:newRide._id,
+        captainId:captain._id,
+      },
+      {
+        headers:{
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    )
+
+    setconfirmRide(true);
+    setridePopUp(false)
+    } catch (error) {
+      console.log("error during confirming the ride:",error);
+    }
+  }
   
   // GSAP animation code
   useGSAP(() => {
@@ -115,18 +142,18 @@ const CaptainHome = () => {
       <div className="h-3/5 p-6">
         <CaptainDetails />
       </div>
-      {/* <div
+      <div
         ref={ridePopUpRef}
         className="fixed w-full z-10 bottom-0 bg-white px-3 py-10 pt-12 translate-y-full"
       >
-        <CaptainNewRide setridePopUp={setridePopUp}  setconfirmRide={setconfirmRide}/>
-      </div> */}
+        <CaptainNewRide setridePopUp={setridePopUp}  setconfirmRide={setconfirmRide} ride={newRide} confirmRideHandler={confirmRideHandler}/>
+      </div>
 
        <div
         ref={confirmRideRef}
         className="fixed w-full h-screen z-10 bottom-0 bg-white px-3 py-10 pt-12 translate-y-full"
       >
-        <CaptainConfirmRide setridePopUp={setridePopUp} setconfirmRide={setconfirmRide}/>
+        <CaptainConfirmRide setridePopUp={setridePopUp} setconfirmRide={setconfirmRide} ride={newRide}/>
       </div>
 
     </div>
