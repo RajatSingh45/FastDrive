@@ -1,7 +1,15 @@
-import React from 'react'
-import {Link} from 'react-router-dom'
+import React, { useContext } from 'react'
+import {Link, useLocation} from 'react-router-dom'
+import { socketContext } from "../contexts/SocketContext";
 
 const Riding = () => {
+  const location=useLocation();
+  const {ride}=location.state||{}
+  const {socket}=useContext(socketContext)
+
+  // console.log("ride in riding:",ride);
+
+
   return (
      <div className='h-screen'>
         <Link to='/home' className='fixed right-2 top-2 flex items-center justify-center rounded-full w-10 h-10 bg-white'>
@@ -22,22 +30,22 @@ const Riding = () => {
           className="h-12"
         />
         <div className='text-right'>
-        <h2 className='text-lg font-medium'>Rajat</h2>
-        <h4 className='text-xl font-semibold -mt-1 -mb-1'>UP20 AB 0143B</h4>
+        <h2 className='text-lg font-medium capitalize'>{ride?.captain?.fullname.firstname}</h2>
+        <h4 className='text-xl font-semibold -mt-1 -mb-1'>{ride?.captain?.veichle.plate}</h4>
         <p className='text-sm text-gray-600'>Maruti Suzuki Alto</p>
         </div>
       </div>
           <div className="flex items-center gap-5 p-3 border-b-2">
             <i className="ri-map-pin-line"></i>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
-              <p className="text-sm -mt-1 text-gray-600">Kirloskar Layout</p>
+              {/* <h3 className="text-lg font-medium">562/11-A</h3> */}
+              <p className="text-sm -mt-1 text-gray-600">{ride?.drop}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3">
             <i className="ri-currency-line"></i>
             <div>
-              <h3 className="text-lg font-medium">Rs200</h3>
+              <h3 className="text-lg font-medium">Rs{ride?.fare}</h3>
               <p className="text-sm -mt-1 text-gray-600">Cash</p>
             </div>
           </div>

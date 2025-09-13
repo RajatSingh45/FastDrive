@@ -1,7 +1,8 @@
 import express from 'express';
 import {body,query} from 'express-validator'
-import { rideController,fareController } from '../controller/rideController.js';
+import { rideController,fareController, confirmRide, startRide, endRide } from '../controller/rideController.js';
 import userAuth from "../middleware/userAuth.js";
+import captainAuth from '../middleware/captainAuth.js';
 
 const rideRouter=express.Router();
 
@@ -15,6 +16,22 @@ rideRouter.get("/get-fares",userAuth,
     query('pickup').isString().isLength({min:3}).withMessage("Pickup Location must be of length 3"),
     query('drop').isString().isLength({min:3}).withMessage("Drop location must be of length 3"),
     fareController
+)
+
+rideRouter.post('/confirm-ride',captainAuth,
+    body('rideId').isMongoId().withMessage('Invalid ride id'),
+    confirmRide
+)
+
+rideRouter.post('/start-ride',captainAuth,
+    body('rideId').isMongoId().withMessage('Invalid ride id'),
+    body('otp').isString().isLength({ min: 6, max: 6 }).withMessage('Invalid OTP'),
+    startRide
+)
+
+rideRouter.post('/end-ride',captainAuth,
+    body('rideId').isMongoId().withMessage('Invalid ride id'),
+    endRide
 )
 
 export default rideRouter;

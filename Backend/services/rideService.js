@@ -1,5 +1,5 @@
 import { getRouteServices } from "./routeInfoServices.js";
-import {getCoordinates} from "./coordinateService.js";
+import { getCoordinates } from "./coordinateService.js";
 import rideModel from "../models/ridesModel.js";
 import crypto from "crypto";
 
@@ -79,7 +79,11 @@ const getSingleVeichleFare = async (pickup, drop, veichleType) => {
     // console.log("distance:",result.distance)
     // console.log("time:",result.time)
     // console.log("vt:",veichleType)
-    const fare = calculateFare(result.distance, result.time, rates[veichleType]);
+    const fare = calculateFare(
+      result.distance,
+      result.time,
+      rates[veichleType]
+    );
 
     // console.log("Final fare:", fare);
 
@@ -123,5 +127,113 @@ const createRide = async (user, pickup, drop, veichleType) => {
   }
 };
 
+//confirm ride
+const confirmRideService = async (rideId, captainId) => {
+  if (!rideId) throw new Error("rideId is required to update ride");
 
-export { createRide, getAllVehicalsFare };
+  if (!captainId) throw new Error("captain is required to update ride");
+
+  await rideModel.findOneAndUpdate(
+    {
+      _id: rideId,
+    },
+    {
+      status: "accepted",
+      captain: captainId,
+    }
+  );
+
+  const ride = await rideModel
+    .findOne({
+      _id: rideId,
+    })
+    .populate("user")
+    .populate("captain")
+    .select("+otp");
+
+  if (!ride) throw new Error("ride not updated");
+
+  return ride;
+};
+
+//start ride
+const startRideService = async ({ rideId, otp, captain }) => {
+  if (!rideId || !otp) {
+    throw new Error("Ride id and OTP are required");
+  }
+
+  const ride = await rideModel
+    .findOne({
+      _id: rideId,
+      status: "accepted",
+    })
+    .populate("user")
+    .populate("captain")
+    .select("+otp");
+
+  //  console.log("ride otp:",ride.otp, typeof ride.otp);
+  //  console.log("curr otp:",otp, typeof otp);
+  if (!ride) {
+    throw new Error("Ride not found");
+  }
+
+  if (ride.status !== "accepted") {
+    throw new Error("Ride not accepted");
+  }
+
+  if (ride.otp !== Number(otp)) {
+    throw new Error("Invalid OTP");
+  }
+
+  // const updatedRide=await rideModel
+  //   .findOneAndUpdate(
+  //     { _id: rideId },
+  //     {
+  //       status: "ongoing",
+  //     },
+  //     { new: true }
+  //   )
+  //   .populate("user")
+  //   .populate("captain");
+
+  ride.status = "ongoing";
+  await ride.save();
+  // console.log("ride in service:", ride);
+
+  return ride;
+};
+
+//end ride
+const endRideService = async (rideId, captain) => {
+  if (!rideId) throw new Error("No ride started");
+
+  const ride = await rideModel
+    .findOne({
+      _id: rideId,
+      captain: captain._id,
+    })
+    .populate("user")
+    .populate("captain")
+    .select("+otp");
+
+       if (!ride) {
+        throw new Error('Ride not found');
+    }
+
+    if (ride.status !== 'ongoing') {
+        throw new Error('Ride not ongoing');
+    }
+
+  ride.status = "completed";
+  await ride.save();
+  console.log("EndRide in service:", ride);
+};
+
+
+export {
+  createRide,
+  getAllVehicalsFare,
+  confirmRideService,
+  startRideService,
+  endRideService,
+};

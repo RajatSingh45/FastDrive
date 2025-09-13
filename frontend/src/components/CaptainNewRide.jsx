@@ -1,6 +1,6 @@
 import React from "react";
 
-const CaptainNewRide = ({setridePopUp,setconfirmRide}) => {
+const CaptainNewRide = ({setridePopUp,setconfirmRide,ride,confirmRideHandler}) => {
   return (
     <div>
       <h5 className="p-1 text-center w-[93%] absolute top-0" onClick={()=>{
@@ -17,10 +17,10 @@ const CaptainNewRide = ({setridePopUp,setconfirmRide}) => {
               src="https://th.bing.com/th/id/OIP._ABagscIv6THcS0vD8XczQHaE8?w=272&h=181&c=7&r=0&o=7&dpr=2&pid=1.7&rm=3"
               alt=""
             />
-            <h2 className="text-lg font-medium">Amit Singh</h2>
+            <h2 className="text-lg font-medium">{ride?.user?.fullname.firstname + " " + ride?.user?.fullname.lastname}</h2>
           </div>
           <div className="flex flex-col">
-            <h3 className="text-lg font-medium">Rs200</h3>
+            <h3 className="text-lg font-medium">Rs{ride?.fare}</h3>
             <h5 className="text-sm text-gray-600 font-medium">2.2 KM</h5>
           </div>
         </div>
@@ -29,21 +29,20 @@ const CaptainNewRide = ({setridePopUp,setconfirmRide}) => {
         <div className="w-full mt-5">
           <div className="mb-4 ml-2">
             <h4 className="text-gray-600 text-sm font-semibold">PICK UP</h4>
-            <h3 className="text-lg font-medium">562/11-A</h3>
             <p className="text-sm -mt-1 text-gray-600">
-              Kirloskar Laoyout, Bangalore, 260090
+              {ride?.pickup}
             </p>
           </div>
           <div className="mb-4 ml-2">
             <h4 className="text-gray-600 text-sm font-semibold">DROP OFF</h4>
-            <h3 className="text-lg font-medium">562/11-A</h3>
-            <p className="text-sm -mt-1 text-gray-600">Kirloskar Layout</p>
+            <p className="text-sm -mt-1 text-gray-600">{ride?.drop}</p>
           </div>
         </div>
         <div className="flex items-center justify-between w-full mt-5">
          <button className="bg-yellow-300 font-semibold p-3 px-10 rounded-lg" onClick={()=>{
           setconfirmRide(true)
-        }}>
+          confirmRideHandler()
+         }}>
           Accept
         </button>
 
