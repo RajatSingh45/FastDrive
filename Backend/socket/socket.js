@@ -54,6 +54,7 @@ const intializeSocket = (server) => {
 };
 
 const sendMessageToSocketId = (socketId, eventName, data) => {
+  // console.log("eventName:",eventName);
   if (io) {
     io.to(socketId).emit(eventName, data);
   } else {

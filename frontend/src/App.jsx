@@ -11,7 +11,7 @@ import Logout from "./pages/Logout";
 import CaptainHome from "./pages/CaptainHome";
 import CaptainProtectWrapper from "./wrapper/CaptainProtectWrapper";
 import CaptainLogout from "./pages/CaptainLogout";
-import Riding from "./components/Riding";
+import Riding from './pages/Riding'
 import CaptainRiding from "./pages/CaptainRiding";
 
 const App = () => {
