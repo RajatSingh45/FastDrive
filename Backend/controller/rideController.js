@@ -1,5 +1,14 @@
-import { getCoordinates, getNearByCaptains } from "../services/coordinateService.js";
-import { confirmRideService, createRide, getAllVehicalsFare, startRideService } from "../services/rideService.js";
+import {
+  getCoordinates,
+  getNearByCaptains,
+} from "../services/coordinateService.js";
+import {
+  confirmRideService,
+  createRide,
+  endRideService,
+  getAllVehicalsFare,
+  startRideService,
+} from "../services/rideService.js";
 import { validationResult } from "express-validator";
 import { sendMessageToSocketId } from "../socket/socket.js";
 import rideModel from "../models/ridesModel.js";
@@ -30,11 +39,17 @@ const rideController = async (req, res) => {
     // console.log("pickupCoords in controller:", pickupCoords);
 
     if (!pickupCoords || pickupCoords.length < 2) {
-      return res.status(500).json({ error: "Could not resolve pickup coordinates" });
+      return res
+        .status(500)
+        .json({ error: "Could not resolve pickup coordinates" });
     }
 
     // Use array indices for lng and lat
-    const captainsAvialable = await getNearByCaptains(pickupCoords[0], pickupCoords[1], 5);
+    const captainsAvialable = await getNearByCaptains(
+      pickupCoords[0],
+      pickupCoords[1],
+      5
+    );
 
     // console.log("cpatins in controller:",captainsAvialable);
 
@@ -48,12 +63,12 @@ const rideController = async (req, res) => {
 
     ride.otp = ""; //captain should not get the otp before reaching the user
 
-    const User=await rideModel.findOne({_id:ride._id}).populate('user')
+    const User = await rideModel.findOne({ _id: ride._id }).populate("user");
     captainsAvialable.forEach((captain) => {
-      sendMessageToSocketId(captain.socketId, "new-ride",User);
+      sendMessageToSocketId(captain.socketId, "new-ride", User);
     });
 
-// console.log(rideWithUser)
+    // console.log(rideWithUser)
 
     return res.status(201).json({
       User,
@@ -87,56 +102,73 @@ const fareController = async (req, res) => {
   }
 };
 
-const confirmRide=async(req,res)=>{
+const confirmRide = async (req, res) => {
   try {
     const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-    const {rideId,captainId}=req.body
+    const { rideId, captainId } = req.body;
 
+    const ride = await confirmRideService(rideId, captainId);
 
-    const ride=await confirmRideService(rideId,captainId);
-
-    sendMessageToSocketId(ride.user.socketId,'ride-confirm',ride);
+    sendMessageToSocketId(ride.user.socketId, "ride-confirm", ride);
 
     return res.status(200).json(ride);
-    
   } catch (error) {
-    console.log("error during confirm ride backend",error)
-    return res.status(500).json({message:error.message})
+    console.log("error during confirm ride backend", error);
+    return res.status(500).json({ message: error.message });
   }
-}
+};
 
-const startRide=async(req,res)=>{
+const startRide = async (req, res) => {
   try {
-     const errors = validationResult(req);
+    const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  
-  const {rideId,otp}=req.body;
-  // console.log("rideId in controller:",rideId)
-  // console.log("otp in controller:",otp);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-  // const currRide=await rideModel.findById(rideId);
-  // console.log("ride:",currRide);
+    const { rideId, otp } = req.body;
+    // console.log("rideId in controller:",rideId)
+    // console.log("otp in controller:",otp);
 
-  const ride=await startRideService({rideId,otp,captain:req.captain});
-  // console.log("ride in controler after updating in service:",ride);
+    // const currRide=await rideModel.findById(rideId);
+    // console.log("ride:",currRide);
 
-  console.log("ride in controller:",ride);
-  
-  sendMessageToSocketId(ride.user.socketId,'ride-started',ride);
-  
-  return res.status(200).json({ride})
+    const ride = await startRideService({ rideId, otp, captain: req.captain });
+    // console.log("ride in controler after updating in service:",ride);
+
+    console.log("ride in controller:", ride);
+
+    sendMessageToSocketId(ride.user.socketId, "ride-started", ride);
+
+    return res.status(200).json({ ride });
   } catch (error) {
-    return res.status(500).json({message:error.message});
+    return res.status(500).json({ message: error.message });
   }
+};
 
-}
+const endRide = async (req, res) => {
+  try {
+    const errors = validationResult(req);
 
-export { rideController, fareController, confirmRide, startRide};
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { rideId,captain } = req.body;
+
+    const ride = await endRideService(rideId,captain);
+
+    sendMessageToSocketId(ride.user.socketId, "ride-ended", ride);
+
+    return res.status(200).json({ ride });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export { rideController, fareController, confirmRide, startRide, endRide };
