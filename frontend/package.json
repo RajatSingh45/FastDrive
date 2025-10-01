@@ -14,14 +14,19 @@
   "description": "",
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@mapbox/polyline": "^1.2.1",
     "axios": "^1.9.0",
     "gsap": "^3.13.0",
+    "leaflet": "^1.9.4",
+    "leaflet-routing-machine": "^3.2.12",
+    "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.6.0",
     "remixicon": "^4.6.0",
     "socket.io-client": "^4.8.1"
   },
   "type": "module",
   "devDependencies": {
+    "@types/leaflet": "^1.9.20",
     "@vitejs/plugin-react": "^4.5.0",
     "@vitejs/plugin-vue": "^5.2.4",
     "autoprefixer": "^10.4.21",

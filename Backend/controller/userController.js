@@ -80,12 +80,12 @@ const userLogin = async (req,res) => {
 };
 
 const userLogout = async (req,res) => {
-  console.log("hit backend")
+  // console.log("hit backend")
          res.clearCookie('token');
 
          const token=req.cookies?.token||req.headers.authorization?.split(' ')[1];
 
-         console.log("recieved token in logout controller:",token);
+        //  console.log("recieved token in logout controller:",token);
 
          await blackListTokenModel.create({token});
 
