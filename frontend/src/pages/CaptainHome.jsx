@@ -7,6 +7,9 @@ import gsap from "gsap";
 import CaptainConfirmRide from "../components/CaptainConfirmRide";
 import { socketContext } from "../contexts/SocketContext";
 import axios from 'axios'
+import LiveTracking from "../components/LiveTrackingMap";
+import { HomeMap } from "../components/HomeMap";
+import CaptainLiveTracking from "../components/captainLiveTracking";
 
 
 const CaptainHome = () => {
@@ -15,6 +18,9 @@ const CaptainHome = () => {
   const [ridePopUp, setridePopUp] = useState(false);
   const [confirmRide, setconfirmRide] = useState(false)
   const [newRide,setNewRide]=useState(null)
+  const [currLocation, setCurrLocation] = useState(null)
+  const [pickupCoords,setPickupCoords]=useState(null)
+  const [dropCoords,setDropCoords]=useState(null)
 
   // useRefs
   const ridePopUpRef = useRef(null);
@@ -35,15 +41,12 @@ const CaptainHome = () => {
       const sendLocation = () => {
         navigator.geolocation.getCurrentPosition(   //a browser api that lets you access user's device location
           (position) => {
-            // console.log({
-            //   lat: position.coords.latitude,
-            //   lng: position.coords.longitude,
-            // })
             
             const location = {
               lat: position.coords.latitude,
               lng: position.coords.longitude,
             };
+            setCurrLocation(location)
             socket.emit("update-captain-loc", {
               userId: captain._id,
               location,
@@ -54,9 +57,9 @@ const CaptainHome = () => {
           }
         );
       };
-
-      sendLocation(); // Initial send
-      const intervalId = setInterval(sendLocation, 10000); // Every 15 seconds
+   
+      sendLocation(); 
+      const intervalId = setInterval(sendLocation, 10000); // Every 10 seconds
 
       return () => clearInterval(intervalId);
     }
@@ -64,11 +67,17 @@ const CaptainHome = () => {
   
   // provide new-ride data to cpatin whenever avilable
   socket.on("new-ride",(data)=>{
-    console.log("new ride data for captain:",data);
+    // console.log("new ride data for captain:",data);
+    // console.log("drop coords:",data.dropCoords)
+    // console.log("pickup coords:",data.pickupCoords)
     setridePopUp(true);
-    setNewRide(data)
+     
+    setNewRide(data.User)
+    setPickupCoords(data.pickupCoords)
+    setDropCoords(data.dropCoords)
   });
-
+  
+  // console.log("set dropcpprds :", dropCoords);
   //confirm th ride
   const confirmRideHandler=async ()=>{
     try {
@@ -131,12 +140,8 @@ const CaptainHome = () => {
           <i className="text-lg font-medium ri-logout-box-r-line"></i>
         </Link>
       </div>
-      <div className="h-2/5">
-        <img
-          className="h-full w-full object-cover"
-          src="https://th.bing.com/th/id/OIP._0rSU5b1l_1q_2CNBBvuSQHaHa?w=250&h=250&c=8&rs=1&qlt=90&o=6&dpr=2&pid=3.1&rm=2"
-          alt=""
-        />
+      <div className={`${confirmRide ? "h-screen" : "h-[65%]"} w-full relative z-0`}>
+       {confirmRide ? <CaptainLiveTracking currLocation={currLocation} destination={pickupCoords}/>:<HomeMap/>}
       </div>
 
       <div className="h-3/5 p-6">
@@ -151,9 +156,9 @@ const CaptainHome = () => {
 
        <div
         ref={confirmRideRef}
-        className="fixed w-full h-screen z-10 bottom-0 bg-white px-3 py-10 pt-12 translate-y-full"
+        className="fixed w-full h-[50%] z-10 bottom-0 bg-white px-3 py-10 pt-12 translate-y-full"
       >
-        <CaptainConfirmRide setridePopUp={setridePopUp} setconfirmRide={setconfirmRide} ride={newRide}/>
+        <CaptainConfirmRide setridePopUp={setridePopUp} setconfirmRide={setconfirmRide} ride={newRide} currLocation={currLocation} dropCoords={dropCoords}/>
       </div>
 
     </div>

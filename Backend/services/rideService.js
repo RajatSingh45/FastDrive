@@ -162,7 +162,7 @@ const startRideService = async ({ rideId, otp, captain }) => {
     throw new Error("Ride id and OTP are required");
   }
 
-  const ride = await rideModel
+const ride = await rideModel
     .findOne({
       _id: rideId,
       status: "accepted",
@@ -198,13 +198,13 @@ const startRideService = async ({ rideId, otp, captain }) => {
 
   ride.status = "ongoing";
   await ride.save();
-  // console.log("ride in service:", ride);
+   console.log("ride while start ride:", ride);
 
   return ride;
 };
 
 //end ride
-const endRideService = async (rideId, captain) => {
+const endRideService = async ({rideId,captain}) => {
   if (!rideId) throw new Error("No ride started");
 
   const ride = await rideModel
@@ -216,6 +216,8 @@ const endRideService = async (rideId, captain) => {
     .populate("captain")
     .select("+otp");
 
+    console.log("ride before update:",ride)
+
        if (!ride) {
         throw new Error('Ride not found');
     }
@@ -223,10 +225,12 @@ const endRideService = async (rideId, captain) => {
     if (ride.status !== 'ongoing') {
         throw new Error('Ride not ongoing');
     }
-
+  
   ride.status = "completed";
   await ride.save();
-  console.log("EndRide in service:", ride);
+
+  console.log("ride after update:", ride);
+  return ride
 };
 
 

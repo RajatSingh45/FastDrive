@@ -47,6 +47,24 @@ const intializeSocket = (server) => {
       });
     });
 
+      //UPDATE USER LOCATION EVERY 2SEC
+    socket.on("update-user-loc", async (data) => {
+      const { userId, location } = data;
+
+      if (!location || !location.lat || !location.lng) {
+        return socket.emit("error", { message: "Invalid location" });
+      }
+
+      //update the user location in db
+      // console.log("hit update location function")
+      await userModel.findByIdAndUpdate(userId, {
+        location: {
+          type: "Point",
+          coordinates: [location.lng, location.lat],
+        },
+      });
+    });
+
     socket.on("disconnect", () => {
       console.log(`User with socketId ${socket.id} disconnected`);
     });
