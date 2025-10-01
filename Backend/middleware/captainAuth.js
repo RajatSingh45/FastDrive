@@ -28,11 +28,13 @@ const captainAuth = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log("Decoded token:", decoded); // ✅ Step 2
+    //  console.log("Decoded token:", decoded); // ✅ Step 2
 
     const captain = await captainModel.findById(decoded._id);
-    // console.log("Captain from DB:", captain); // ✅ Step 2
+    //  console.log("Captain from DB:", captain); // ✅ Step 2
     req.captain = captain;
+    console.log("req.cpatain:",req.captain)
+    
     return next();
   } catch (err) {
     return res.status(401).json({ message: "Unotherized second" });

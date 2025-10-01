@@ -1,11 +1,15 @@
 import React, { useContext } from 'react'
 import {Link, useLocation} from 'react-router-dom'
 import { socketContext } from "../contexts/SocketContext";
+import LiveTracking from '../components/LiveTrackingMap';
 
 const Riding = () => {
   const location=useLocation();
-  const {ride}=location.state||{}
+  const {ride,dropCoords,geometry,currLocation,pickupCoords}=location.state
   const {socket}=useContext(socketContext)
+
+  console.log("pickupCoords in riding:",pickupCoords)
+  console.log("dropCoords in riding:",dropCoords)
 
   // console.log("ride in riding:",ride);
 
@@ -16,11 +20,7 @@ const Riding = () => {
         <i className="text-lg font-medium ri-home-2-line"></i>
         </Link>
         <div className='h-1/2'>
-             <img
-          className="h-full w-full object-cover"
-          src="https://th.bing.com/th/id/OIP._0rSU5b1l_1q_2CNBBvuSQHaHa?w=250&h=250&c=8&rs=1&qlt=90&o=6&dpr=2&pid=3.1&rm=2"
-          alt=""
-        />
+         <LiveTracking currLocation={currLocation} pickupCoords={pickupCoords} dropCoords={dropCoords} geometry={geometry}/>
         </div>
          <div className='h-1/2 p-4'>
           <div className='flex items-center justify-between'>

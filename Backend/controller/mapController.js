@@ -3,6 +3,7 @@ import { getRouteServices,getSuggestions } from "../services/routeInfoServices.j
 
 const routesController = async (req, res) => {
   const { pickup, drop } = req.body;
+   try {
   const pickupCoords = await getCoordinates(pickup);
   const dropCoords = await getCoordinates(drop);
 
@@ -10,9 +11,9 @@ const routesController = async (req, res) => {
     return res.status(400).json({ error: "Invalid address provided" });
   }
 
-  try {
+  // console.log("Coordinates being sent to OpenRouteService:", { pickupCoords, dropCoords });
     const result = await getRouteServices(pickupCoords, dropCoords);
-     console.log(result);
+    //  console.log(result);
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch route" });

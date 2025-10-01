@@ -6,12 +6,14 @@ const FinishRide = (props) => {
   const navigate = useNavigate();
   const captain=localStorage.getItem('captain')
 
+  // console.log("ride in finishRideId:",props.ride._id)
+  console.log("captain:",captain)
+
   async function endRide() {
     const response = await axios.post(
       `${import.meta.env.VITE_BASE_URL}/rides/end-ride`,
       {
-        rideId: props.ride._id,
-        captain:captain
+        rideId: props.ride._id
       },
       {
         headers: {

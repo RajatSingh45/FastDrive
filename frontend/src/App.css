@@ -1,0 +1,7 @@
+.start-marker {
+  filter: hue-rotate(120deg);
+}
+
+.end-marker {
+  filter: hue-rotate(240deg);
+}

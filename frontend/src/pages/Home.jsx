@@ -12,6 +12,8 @@ import { RideDataContext } from "../contexts/rideContext";
 import { userDataContext } from "../contexts/userDataContext";
 import { socketContext } from "../contexts/SocketContext";
 import { useNavigate } from "react-router-dom";
+import LiveTracking from "../components/LiveTrackingMap";
+import { HomeMap } from '../components/HomeMap'
 // import ChooseVeichleOption from "../components/ChooseVeichleOption";
 
 const Home = () => {
@@ -27,8 +29,12 @@ const Home = () => {
   const [activeField, setActiveField] = useState("");
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [dropSuggestions, setDropSuggestions] = useState([]);
-  const [fares, setFares] = useState({})
-  const [ride,setRide]=useState(null)
+  const [fares, setFares] = useState({});
+  const [ride, setRide] = useState(null);
+  const [pickupCoords, setPickupCoords] = useState(null);
+  const [dropCoords, setDropCoords] = useState(null);
+  const [currLocation,setCurrLocation]=useState(null)
+  const [geometry, setGeometry] = useState(null);
 
   //useRefs
   const pannelRef = useRef(null);
@@ -38,41 +44,76 @@ const Home = () => {
   const pannelCloseRef = useRef(null);
   const waitingForDriverRef = useRef(null);
 
-
   //useContexts
-  const {selectedVehical}=useContext(RideDataContext)
-  const {user}=useContext(userDataContext)
-  const {socket}=useContext(socketContext)
+  const { selectedVehical } = useContext(RideDataContext);
+  const { user } = useContext(userDataContext);
+  const { socket } = useContext(socketContext);
 
   //useNavigate
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
+  //useEffects
   //emiting join event to join socket
   useEffect(() => {
     // console.log("user in home:-",user)
-    if(user&&user._id){
-      socket.emit("join",{userId:user._id,userType:"user"})
+    if (user && user._id) {
+      socket.emit("join", { userId: user._id, userType: "user" });
+
+       const sendLocation = () => {
+        navigator.geolocation.getCurrentPosition(   //a browser api that lets you access user's device location
+          (position) => {
+            // console.log({
+            //   lat: position.coords.latitude,
+            //   lng: position.coords.longitude,
+            // })
+            
+            const location = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+            setCurrLocation(location)
+            socket.emit("update-user-loc", {
+              userId: user._id,
+              location,
+            });
+          },
+          (error) => {
+            console.error("Geolocation error:", error);
+          }
+        );
+      };
+   
+      sendLocation(); // Initial send
+      const intervalId = setInterval(sendLocation, 2000); // Every 10 seconds
+
+      return () => clearInterval(intervalId);
     }
-  }, [user])
+  }, [user]);
 
-  socket.on('ride-confirm',ride=>{
-      setveichleFound(false);
-      setwaitingForDriver(true);
-      setRide(ride);
-  })
 
-  socket.on('ride-started',ride=>{
-    console.log("start ride on frontend")
-    setwaitingForDriver(false)
-    navigate('/riding',{state:{ride}})
-  })
-  
+  //socket uses
+  socket.on("ride-confirm", (ride) => {
+    setveichleFound(false);
+    setwaitingForDriver(true);
+    setRide(ride);
+  });
+
+  socket.on("ride-started", (ride) => {
+    // console.log("start ride on frontend");
+    setwaitingForDriver(false);
+    navigate("/riding", { state: { ride,
+      pickupCoords,
+      dropCoords,
+      geometry,
+      currLocation
+    } });
+  });
 
   //for animation of pages
   useGSAP(() => {
     if (pannelOpen) {
       gsap.to(pannelRef.current, {
-        height: "70%",
+        height: "100%",
         padding: 24,
       });
       gsap.to(pannelCloseRef.current, {
@@ -178,7 +219,7 @@ const Home = () => {
 
   const handleDropChange = async (e) => {
     const value = e.target.value;
-   setDrop(value)
+    setDrop(value);
 
     if (!value) {
       setDropSuggestions([]);
@@ -214,56 +255,86 @@ const Home = () => {
     setveichleSelection(true);
     setPannelOpen(false);
 
-    if(!pickup||!drop){
-      alert("provide valid address")
-      setveichleSelection(false)
+    if (!pickup || !drop) {
+      alert("provide valid address");
+      setveichleSelection(false);
     }
+
+    // API call for coordinates and geometry moved here
     try {
-      console.log("Sending request with:", { pickup, drop }); 
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/maps/get-coordinates`,
+        { pickup, drop },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      //  console.log("fetching pickupCoords:", response.data.coordinates[0]);
+      const [pickupLng, pickupLat] = response.data.coordinates[0];
+      const [dropLng, dropLat] = response.data.coordinates[1];
+
+      console.log("response:",response.data.coordinates[0],response.data.coordinates[1])
+      setPickupCoords([pickupLat, pickupLng]);
+      setDropCoords([dropLat, dropLng]);
+      setGeometry(response.data.geometry);
+
+    } catch (error) {
+      console.error("Error in fetching coordinates:", error.message);
+    }
+
+    try {
+      console.log("Sending request with:", { pickup, drop });
       const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/rides/get-fares`,
-      {
-        params: { pickup, drop },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-    setFares(response.data);
-    console.log(fares)
+        `${import.meta.env.VITE_BASE_URL}/rides/get-fares`,
+        {
+          params: { pickup, drop },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setFares(response.data);
+      console.log(fares);
     } catch (error) {
       console.error("Full error details:", {
-      status: error.response?.status,
-      data: error.response?.data,
-      config: error.config
-    });
-    alert(`Failed to get fares: ${error.response?.data?.message || error.message}`);
+        status: error.response?.status,
+        data: error.response?.data,
+        config: error.config,
+      });
+      alert(
+        `Failed to get fares: ${error.response?.data?.message || error.message}`
+      );
     }
   }
 
   //function to create a ride
-  const createRide=async ()=>{
+  const createRide = async () => {
     console.log("confirm clicked at home!");
     try {
-      const ride=await axios.post( `${import.meta.env.VITE_BASE_URL}/rides/create-ride`,
+      const ride = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/rides/create-ride`,
         {
-        pickup,
-        drop,
-        veichleType:selectedVehical
-        },{
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          'Content-Type':'application/json'
+          pickup,
+          drop,
+          veichleType: selectedVehical,
         },
-      }
-      )
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      console.log(ride.data)
+      console.log(ride.data);
     } catch (error) {
-      console.log("error in creating the ride:",error);
-      throw new Error(error)
+      console.log("error in creating the ride:", error);
+      throw new Error(error);
     }
-  }
+  };
 
   //funtion to  handle back button apperaing on map (to jump back to previous page)
   const backButtonHandler = () => {
@@ -277,28 +348,28 @@ const Home = () => {
   };
 
   return (
-    <div className="h-screen relative">
-      <div>
-        {(veichleSelection || confirmVeichle) && (
-          <h5
-            onClick={() => {
-              backButtonHandler();
-            }}
-            className="w-16 absolute left-5 top-5 z-50 "
-          >
-            <i className="ri-arrow-left-long-line"></i>
-          </h5>
-        )}
-        <div className="h-screen w-screen">
-          <img
-            className="h-full w-full object-cover"
-            src="https://th.bing.com/th/id/OIP._0rSU5b1l_1q_2CNBBvuSQHaHa?w=250&h=250&c=8&rs=1&qlt=90&o=6&dpr=2&pid=3.1&rm=2"
-            alt=""
-          />
-        </div>
+    // <div className="h-screen relative">
+    <div className="h-screen flex flex-col relative">
+    {/* This container will hold the map and the back button */}
+    <div className="h-2/3 w-full relative z-0">
+      {(veichleSelection || confirmVeichle) && (
+        <h5
+          onClick={() => {
+            backButtonHandler();
+          }}
+          className="w-16 absolute left-5 top-5 z-50 "
+        >
+          <i className="ri-arrow-left-long-line"></i>
+        </h5>
+      )}
+      {/* <div className="h-screen w-screen"> */}
+      {/* <div className="h-[65%] w-full relative z-0"> */}
+        <HomeMap/>
+      {/* </div> */}
       </div>
-      <div className="flex flex-col justify-end h-screen absolute top-0 w-full ">
-        <div className="h-[30%] p-6 bg-white relative">
+      {/* <div className="flex flex-col justify-end h-screen absolute top-0 w-full"> */}
+      <div className="h-1/3 w-full relative z-10 flex flex-col justify-end">
+        <div className="h-full p-6 bg-white relative">
           <h5
             ref={pannelCloseRef}
             onClick={() => {
@@ -365,7 +436,7 @@ const Home = () => {
         </div>
         <div
           ref={veichleSelectionRef}
-          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10 pt-12"
+          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3"
         >
           <ChooseVeichleOption
             setConfirmVeichle={setConfirmVeichle}
@@ -377,7 +448,7 @@ const Home = () => {
         </div>
         <div
           ref={confirmVeichleRef}
-          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10 pt-12"
+          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10"
         >
           <ConfirmVeichle
             setConfirmVeichle={setConfirmVeichle}
@@ -391,13 +462,19 @@ const Home = () => {
         </div>
         <div
           ref={veichleFoundRef}
-          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10 pt-14"
+          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10"
         >
-          <VeichleFound setveichleFound={setveichleFound} fares={fares} pickup={pickup} drop={drop} ride={ride}/>
+          <VeichleFound
+            setveichleFound={setveichleFound}
+            fares={fares}
+            pickup={pickup}
+            drop={drop}
+            ride={ride}
+          />
         </div>
         <div
           ref={waitingForDriverRef}
-          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10 pt-14"
+          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10"
         >
           <WaitingForDriver
             ride={ride}
@@ -406,6 +483,7 @@ const Home = () => {
           />
         </div>
       </div>
+      {/* </div> */}
     </div>
   );
 };
