@@ -35,6 +35,7 @@ const rideController = async (req, res) => {
     // res.status(201).json({ ride });
 
     const pickupCoords = await getCoordinates(pickup);
+    const dropCoords = await getCoordinates(drop);
 
     // console.log("pickupCoords in controller:", pickupCoords);
 
@@ -44,6 +45,15 @@ const rideController = async (req, res) => {
         .json({ error: "Could not resolve pickup coordinates" });
     }
 
+    if (!dropCoords || dropCoords.length < 2) {
+      return res
+        .status(500)
+        .json({ error: "Could not resolve drop coordinates" });
+    }
+    //  console.log("drop and dropCoords in controller:",drop,dropCoords)
+
+    const pickupLatLng = [pickupCoords[1], pickupCoords[0]];
+    const dropLatLng = [dropCoords[1], dropCoords[0]];
     // Use array indices for lng and lat
     const captainsAvialable = await getNearByCaptains(
       pickupCoords[0],
@@ -64,8 +74,14 @@ const rideController = async (req, res) => {
     ride.otp = ""; //captain should not get the otp before reaching the user
 
     const User = await rideModel.findOne({ _id: ride._id }).populate("user");
+    // console.log("user in controller:",User)
+    // console.log("drop in controller:",ride)
     captainsAvialable.forEach((captain) => {
-      sendMessageToSocketId(captain.socketId, "new-ride", User);
+      sendMessageToSocketId(captain.socketId, "new-ride", {
+        User,
+        pickupCoords:pickupLatLng,
+        dropCoords:dropLatLng,
+      });
     });
 
     // console.log(rideWithUser)
@@ -92,6 +108,8 @@ const fareController = async (req, res) => {
   if (!pickup || !drop) {
     return res.status(500).json({ error: "Required both address" });
   }
+
+  console.log("pickup and drop in fare:", pickup, drop);
 
   try {
     const fares = await getAllVehicalsFare(pickup, drop);
@@ -141,7 +159,7 @@ const startRide = async (req, res) => {
     const ride = await startRideService({ rideId, otp, captain: req.captain });
     // console.log("ride in controler after updating in service:",ride);
 
-    console.log("ride in controller:", ride);
+    // console.log("ride in controller:", ride);
 
     sendMessageToSocketId(ride.user.socketId, "ride-started", ride);
 
@@ -153,15 +171,30 @@ const startRide = async (req, res) => {
 
 const endRide = async (req, res) => {
   try {
+    console.log(req.captain);
+
+    if (!req.captain) {
+      console.error("End Ride failed: Captain authentication object missing.");
+      return res
+        .status(401)
+        .json({ message: "Authentication required. Please log in again." });
+    }
+
+    // console.log("captain;",req.captain)
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { rideId,captain } = req.body;
+    const { rideId } = req.body;
 
-    const ride = await endRideService(rideId,captain);
+    // console.log("rideId:",rideId);
+    // console.log("captian:",captain);
+
+    const ride = await endRideService({ rideId, captain: req.captain });
+
+    console.log("ride in controler:", ride);
 
     sendMessageToSocketId(ride.user.socketId, "ride-ended", ride);
 

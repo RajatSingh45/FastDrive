@@ -26,7 +26,7 @@ const getRouteServices = async (pickup, drop) => {
       const time = data?.routes[0]?.summary?.duration;
       const geometry = data?.routes[0]?.geometry;
 
-      return { distance, time, coordinates: [pickup, drop] };
+      return { distance, time, coordinates: [pickup, drop],geometry };
     } else return "unable to fectch the routes info";
   } catch (error) {
     console.log("error in fetching the route info:", error);
