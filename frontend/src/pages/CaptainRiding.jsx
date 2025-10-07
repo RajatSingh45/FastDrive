@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import FinishRide from "../components/FinishRide";
 import gsap from "gsap";
-import CaptainLiveTracking from "../components/captainLiveTracking";
+import CaptainLiveTracking from "../components/CaptainLiveTracking";
 
 const CaptainRiding = () => {
   const [finishRidePannel, setFinishRidePannel] = useState(false);
