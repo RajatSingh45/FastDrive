@@ -30,17 +30,19 @@ const createOrder = async (req, res) => {
   }
 };
 
-const verifyPatment = async (req, res) => {
+const verifyPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
       req.body;
 
-    if (!razorpay_order_id || razorpay_payment_id || razorpay_signature) {
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res
         .status(400)
         .json({ message: "All fieslds are required to verify the payment" });
     }
 
+    console.log("All required fields to verify payment:",razorpay_order_id,razorpay_payment_id,razorpay_signature)
+    
     const varifiedPayment = await verifyPaymentService(
       razorpay_order_id,
       razorpay_payment_id,
@@ -73,4 +75,4 @@ const verifyPatment = async (req, res) => {
 };
 
 
-export {createOrder,verifyPatment}
+export {createOrder,verifyPayment}
