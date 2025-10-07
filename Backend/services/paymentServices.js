@@ -38,9 +38,6 @@ const verifyPaymentService = async (orderId, paymentId, signature) => {
       .update(sign)
       .digest("hex");
     
-    if(!expectedSign){
-        throw new Error("Payment not verified successfully")
-    }
     return expectedSign === signature;
   } catch (error) {
     console.log("payment not verified")
