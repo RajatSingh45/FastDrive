@@ -216,7 +216,7 @@ const endRideService = async ({rideId,captain}) => {
     .populate("captain")
     .select("+otp");
 
-    console.log("ride before update:",ride)
+    // console.log("ride before update:",ride)
 
        if (!ride) {
         throw new Error('Ride not found');
@@ -229,7 +229,7 @@ const endRideService = async ({rideId,captain}) => {
   ride.status = "completed";
   await ride.save();
 
-  console.log("ride after update:", ride);
+  // console.log("ride after update:", ride);
   return ride
 };
 

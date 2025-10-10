@@ -33,7 +33,6 @@ const VeichleFound = (props) => {
             <i className="ri-currency-line"></i>
             <div>
               <h1 className="text-lg font-medium">Rs {props.fares?.[`${selectedVehical}Fare`] ?? "0"}</h1>
-              <p className="text-sm -mt-1 text-gray-600">Cash</p>
             </div>
           </div>
         </div>

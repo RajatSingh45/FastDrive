@@ -66,6 +66,10 @@ const captainSchema = new mongoose.Schema({
         type: [Number], // [lng, lat]
         required: true
     }
+},
+totalEarn:{
+  type:Number,
+  default:0
 }
 });
 
