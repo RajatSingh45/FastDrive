@@ -1,6 +1,6 @@
 import React from "react";
 
-const CaptainNewRide = ({setridePopUp,setconfirmRide,ride,confirmRideHandler}) => {
+const CaptainNewRide = ({setridePopUp,setconfirmRide,ride,confirmRideHandler,distance}) => {
   return (
     <div>
       <h5 className="p-1 text-center w-[93%] absolute top-0" onClick={()=>{
@@ -21,7 +21,7 @@ const CaptainNewRide = ({setridePopUp,setconfirmRide,ride,confirmRideHandler}) =
           </div>
           <div className="flex flex-col">
             <h3 className="text-lg font-medium">Rs{ride?.fare}</h3>
-            <h5 className="text-sm text-gray-600 font-medium">2.2 KM</h5>
+            <h5 className="text-sm text-gray-600 font-medium">{distance}KM</h5>
           </div>
         </div>
       </div>
