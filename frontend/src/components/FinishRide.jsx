@@ -49,14 +49,13 @@ const FinishRide = (props) => {
             {props.ride?.user.fullname.firstname}
           </h2>
         </div>
-        <h5 className="text-lg font-semibold">2.2 KM</h5>
+        <h5 className="text-lg font-semibold">{props.distance} KM</h5>
       </div>
       <div className="flex gap-2 justify-between flex-col items-center">
         <div className="w-full mt-5">
           <div className="flex items-center gap-5 p-3 border-b-2">
             <i className="ri-map-pin-user-fill"></i>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
               <p className="text-sm -mt-1 text-gray-600">
                 {props.ride?.pickup}
               </p>
@@ -72,8 +71,7 @@ const FinishRide = (props) => {
           <div className="flex items-center gap-5 p-3">
             <i className="ri-currency-line"></i>
             <div>
-              <h3 className="text-lg font-medium">₹{props.ride?.fare} </h3>
-              <p className="text-sm -mt-1 text-gray-600">Cash Cash</p>
+              <h3 className="text-lg font-medium">Rs{props.ride?.fare} </h3>
             </div>
           </div>
         </div>

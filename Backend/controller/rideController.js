@@ -12,6 +12,8 @@ import {
 import { validationResult } from "express-validator";
 import { sendMessageToSocketId } from "../socket/socket.js";
 import rideModel from "../models/ridesModel.js";
+import { getRouteServices } from "../services/routeInfoServices.js";
+import captainModel from "../models/captainModel.js";
 
 const rideController = async (req, res) => {
   try {
@@ -26,18 +28,27 @@ const rideController = async (req, res) => {
     if (!pickup || !drop || !veichleType)
       return res.status(500).json({ error: "All feilds are required" });
 
+    // console.log("pickup and drop:",pickup,drop)
+
+    // const geometry=route.geometry
+    
     const user = req.user?._id;
     if (!user) return res.status(500).json({ error: "user is unautherized" });
-
+    
     const ride = await createRide(user, pickup, drop, veichleType);
     if (!ride) return res.status(500).json({ error: "ride not created" });
-
+    
     // res.status(201).json({ ride });
-
-    const pickupCoords = await getCoordinates(pickup);
+    
     const dropCoords = await getCoordinates(drop);
+    const pickupCoords = await getCoordinates(pickup);
+    
+    const routeInfo=await getRouteServices(pickupCoords,dropCoords);
+    // console.log("routeInfo:",routeInfo)
 
     // console.log("pickupCoords in controller:", pickupCoords);
+
+    ride.timeToComplete=routeInfo.time
 
     if (!pickupCoords || pickupCoords.length < 2) {
       return res
@@ -73,14 +84,19 @@ const rideController = async (req, res) => {
 
     ride.otp = ""; //captain should not get the otp before reaching the user
 
+
     const User = await rideModel.findOne({ _id: ride._id }).populate("user");
     // console.log("user in controller:",User)
     // console.log("drop in controller:",ride)
+    const distance=(routeInfo.distance)/1000;
     captainsAvialable.forEach((captain) => {
       sendMessageToSocketId(captain.socketId, "new-ride", {
         User,
         pickupCoords:pickupLatLng,
         dropCoords:dropLatLng,
+        geometry:routeInfo.geometry,
+        time:routeInfo.time,
+        distance
       });
     });
 
@@ -194,9 +210,12 @@ const endRide = async (req, res) => {
 
     const ride = await endRideService({ rideId, captain: req.captain });
 
-    console.log("ride in controler:", ride);
+    // console.log("ride in controler:", ride);
 
     sendMessageToSocketId(ride.user.socketId, "ride-ended", ride);
+
+    const captainId=req.captain._id
+    await captainModel.findOneAndUpdate({_id:captainId}, { $inc: { totalEarn:ride.fare } },{new:true}) 
 
     return res.status(200).json({ ride });
   } catch (error) {
