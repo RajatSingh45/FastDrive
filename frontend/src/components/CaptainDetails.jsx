@@ -1,9 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
-import { captainContext } from "../contexts/CaptainDataContext";
+import React, {useEffect, useState } from "react";
+import axios from 'axios'
 
 const CaptainDetails = () => {
 // const { captain } = useContext(captainContext);
 const [captain,setCaptain]=useState(null)
+const [captainData,setCaptainData]=useState(null)
 
 useEffect(() => {
   const storedCaptain = localStorage.getItem('captain');
@@ -12,6 +13,26 @@ useEffect(() => {
   } else {
     setCaptain(null);
   }
+
+  const token=localStorage.getItem('token')
+
+  const fetchProfile=async ()=>{
+    try {
+      const response=await axios.get(`${import.meta.env.VITE_BASE_URL}/captains/profile`,{
+        headers:{
+          Authorization:`Bearer ${token}`,
+        },
+      });
+
+      setCaptainData(response.data)
+    } catch (error) {
+      console.error("Error in fetching captain profile:",error)
+      setCaptainData(null)
+    }
+  }
+
+  fetchProfile();
+
   // console.log("captain in details:", storedCaptain);
 }, [])
 
@@ -29,7 +50,7 @@ useEffect(() => {
           <h4 className="text-xl font-medium capitalize">{captain?.fullname?.firstname} {captain?.fullname?.lastname}</h4>
         </div>
         <div>
-          <h4 className="text-xl font-semibold">Rs 200</h4>
+          <h4 className="text-xl font-semibold">Rs {captainData?.totalEarn}</h4>
           <p className="text-sm text-gray-600">Earned</p>
         </div>
       </div>

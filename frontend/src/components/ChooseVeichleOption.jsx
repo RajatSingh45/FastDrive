@@ -26,7 +26,6 @@ const ChooseVeichleOption = (props) => {
               <i className="ri-user-fill"></i>4
             </span>
           </h4>
-          <h5 className="font-medium text-sm">2 mins away</h5>
           <p className="font-medium text-xs ">Affordable, compact rides</p>
         </div>
         <h2 className="text-xl font-semibold pb-9">Rs{props.fares.carFare}</h2>
@@ -51,7 +50,6 @@ const ChooseVeichleOption = (props) => {
               <i className="ri-user-fill"></i>1
             </span>
           </h4>
-          <h5 className="font-medium text-sm">2 mins away</h5>
           <p className="font-medium text-xs ">Affordable, compact rides</p>
         </div>
         <h2 className="text-xl font-semibold pb-9">Rs{props.fares.motoFare}</h2>
@@ -76,7 +74,6 @@ const ChooseVeichleOption = (props) => {
               <i className="ri-user-fill"></i>3
             </span>
           </h4>
-          <h5 className="font-medium text-sm">2 mins away</h5>
           <p className="font-medium text-xs ">Affordable, compact rides</p>
         </div>
         <h2 className="text-xl font-semibold pb-9">Rs{props.fares.autoFare}</h2>

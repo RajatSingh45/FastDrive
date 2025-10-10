@@ -21,6 +21,8 @@ const CaptainHome = () => {
   const [currLocation, setCurrLocation] = useState(null)
   const [pickupCoords,setPickupCoords]=useState(null)
   const [dropCoords,setDropCoords]=useState(null)
+  const [geometry,setGeometry]=useState(null)
+  const [distance,setDistance]=useState(null)
 
   // useRefs
   const ridePopUpRef = useRef(null);
@@ -66,16 +68,16 @@ const CaptainHome = () => {
   }, [socket])
   
   // provide new-ride data to cpatin whenever avilable
-  socket.on("new-ride",(data)=>{
-    // console.log("new ride data for captain:",data);
-    // console.log("drop coords:",data.dropCoords)
-    // console.log("pickup coords:",data.pickupCoords)
-    setridePopUp(true);
-     
-    setNewRide(data.User)
-    setPickupCoords(data.pickupCoords)
-    setDropCoords(data.dropCoords)
-  });
+  socket.on("new-ride", (data) => {
+        setridePopUp(true);
+        setNewRide(data.User);
+        setPickupCoords(data.pickupCoords);
+        setGeometry(data.geometry);
+        setDropCoords(data.dropCoords);
+        setDistance(data.distance)
+        console.log(data.distance)
+    }
+    );
   
   // console.log("set dropcpprds :", dropCoords);
   //confirm th ride
@@ -151,14 +153,14 @@ const CaptainHome = () => {
         ref={ridePopUpRef}
         className="fixed w-full z-10 bottom-0 bg-white px-3 py-10 pt-12 translate-y-full"
       >
-        <CaptainNewRide setridePopUp={setridePopUp}  setconfirmRide={setconfirmRide} ride={newRide} confirmRideHandler={confirmRideHandler}/>
+        <CaptainNewRide setridePopUp={setridePopUp}  setconfirmRide={setconfirmRide} ride={newRide} confirmRideHandler={confirmRideHandler} distance={distance}/>
       </div>
 
        <div
         ref={confirmRideRef}
         className="fixed w-full h-[50%] z-10 bottom-0 bg-white px-3 py-10 pt-12 translate-y-full"
       >
-        <CaptainConfirmRide setridePopUp={setridePopUp} setconfirmRide={setconfirmRide} ride={newRide} currLocation={currLocation} dropCoords={dropCoords}/>
+        <CaptainConfirmRide setridePopUp={setridePopUp} setconfirmRide={setconfirmRide} ride={newRide} currLocation={currLocation} dropCoords={dropCoords} geometry={geometry} distance={distance}/>
       </div>
 
     </div>

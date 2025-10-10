@@ -11,7 +11,7 @@ const MapController = ({liveLocation,pickup, drop, route }) => {
 
     useEffect(() => {
         if(liveLocation){
-            map.setView(liveLocation,15)
+            map.panTo(liveLocation)
         }
        else if (route && route.length > 0) {
             const bounds = L.latLngBounds(route);

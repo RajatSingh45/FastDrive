@@ -47,6 +47,9 @@ const rideSchema=new mongoose.Schema({
         type:Number,
         select:false,
     },
+    timeToComplete:{
+        type:Number,
+    }
 });
 
 const rideModel=mongoose.model("Ride",rideSchema);
