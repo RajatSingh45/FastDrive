@@ -49,7 +49,7 @@ const Riding = () => {
         key,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: "Ride",
+        name: "Ride Completed",
         description: "Your ride payment",
         order_id: orderData.id,
         handler: async function (response) {
