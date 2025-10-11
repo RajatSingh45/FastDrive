@@ -12,13 +12,28 @@ import paymentRouter from "./routers/paymentRouter.js"
 
 db()
 const app = express()
-app.use(cors({
-   origin: [
+const allowedOrigins = [
+    "https://fast-drive-three.vercel.app", 
+
+    "https://fast-drive-gd5qrlbp-rajat-singhs-projects-840e3620.vercel.app",
+
+    "https://fastdrive-nz7q.onrender.com", 
+
     "http://localhost:5173",
-    "https://vrgqtjbz-5173.inc1.devtunnels.ms"
-  ],
-  credentials: true,
-}))
+    "https://vrgqtjbz-5173.inc1.devtunnels.ms" 
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS policy.'));
+        }
+    },
+    credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+}));
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
