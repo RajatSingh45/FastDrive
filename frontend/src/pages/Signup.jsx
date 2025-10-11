@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react"
 import {Link, useNavigate} from 'react-router-dom'
-import {userDataContext} from '../contexts/UserDataContext'
+import {userDataContext} from '../contexts/userDataContext'
 import axios from 'axios'
 
 const Signup = () => {
