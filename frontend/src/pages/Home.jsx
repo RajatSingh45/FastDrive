@@ -6,7 +6,7 @@ import "remixicon/fonts/remixicon.css";
 import SearchPannel from "../components/SearchPannel";
 import ChooseVeichleOption from "../components/ChooseVeichleOption";
 import ConfirmVeichle from "../components/ConfirmVeichle";
-import VeichleFound from "../components/veichleFound";
+import VeichleFound from "../components/VeichleFound";
 import WaitingForDriver from "../components/WaitingForDriver";
 import { RideDataContext } from "../contexts/rideContext";
 import { userDataContext } from "../contexts/userDataContext";
