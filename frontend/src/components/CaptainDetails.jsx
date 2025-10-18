@@ -51,7 +51,7 @@ useEffect(() => {
         </div>
         <div>
           <h4 className="text-xl font-semibold">Rs {captainData?.totalEarn}</h4>
-          <p className="text-sm text-gray-600">Earned</p>
+          <p className="text-base text-gray-600">Earned</p>
         </div>
       </div>
       <div className="flex p-3 mt-6 bg-gray-50 rounded-xl justify-center gap-5 items-center">

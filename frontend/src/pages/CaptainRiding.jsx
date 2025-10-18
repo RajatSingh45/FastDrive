@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import { Link, useLocation} from "react-router-dom";
 import FinishRide from "../components/FinishRide";
 import gsap from "gsap";
-import CaptainLiveTracking from "../components/captainLiveTracking";
+import CaptainLiveTracking from "../components/CaptainLiveTracking";
 
 const CaptainRiding = () => {
   const [finishRidePannel, setFinishRidePannel] = useState(false);
@@ -14,14 +14,6 @@ const CaptainRiding = () => {
   const dropCoords=location.state?.dropCoords
   const geometry=location.state?.geometry
   const distance=location.state?.distance
-
-  //  console.log("ride in captain riding:",ride)
-  //  console.log("currLocation in cpatin riding:",currLocation)
-  //  console.log("drop coords in captain rinding:",dropCoords)
-
-  // const handleCompleteRide=async ()=>{
-  //   navigate("/finish")
-  // }
 
   useGSAP(() => {
     if (finishRidePannel) {
@@ -37,7 +29,6 @@ const CaptainRiding = () => {
 
   return (
     <div className="h-screen flex flex-col">
-  {/* Header */}
   <div className="fixed p-6 top-0 flex items-center justify-between w-full z-50">
     <Link
       to="/captain-login"
@@ -47,18 +38,16 @@ const CaptainRiding = () => {
     </Link>
   </div>
 
-  {/* Map in background */}
-  <div className="absolute top-0 left-0 w-full h-[90%] z-0">
+  <div className="absolute top-0 left-0 w-full h-[80%] z-0">
     <CaptainLiveTracking currLocation={currLocation} destination={dropCoords} geometry={geometry}/>
   </div>
 
-  {/* Ride Info (overlay on map, below header) */}
-  <div className="absolute bottom-0 left-0 w-full flex items-center justify-between p-2 z-40">
-    <h4 className="text-xl font-semibold">{distance} Km Away</h4>
+  <div className="absolute bottom-0 left-0 w-full flex justify-between p-2 z-40  flex-col">
+    <h4 className="text-lg font-semibold mb-5">{distance} Km Away</h4>
     <button
-      className="bg-yellow-300 font-semibold p-3 px-10 rounded-lg text-gray-600"
+      className="bg-gray-400 font-semibold p-3 px-10 rounded-lg text-black"
       onClick={() => {
-        // handleCompleteRide();
+       
         setFinishRidePannel(true);
       }}
     >
@@ -66,7 +55,6 @@ const CaptainRiding = () => {
     </button>
   </div>
 
-  {/* Finish Ride Panel (bottom sheet) */}
   <div
     ref={finishRidePannelRef}
     className="fixed w-full z-50 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"

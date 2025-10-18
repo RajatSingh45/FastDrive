@@ -21,12 +21,12 @@ function LocationMarker({ onLocationFound }) {
     },
   });
 
-  // Use useEffect to trigger location finding when the component first mounts
+ 
   useEffect(() => {
     map.locate();
   }, [map]);
 
-  // Render the marker only after the position has been found
+
   return position === null ? null : (
     <Marker position={position}>
       <Popup>You are here</Popup>
@@ -36,9 +36,9 @@ function LocationMarker({ onLocationFound }) {
 
 const api_key=import.meta.env.VITE_MAP_API_KEY
 
-// This is the main component that renders the map
+
 export function HomeMap() {
-  const defaultCenter = [20.5937, 78.9629]; // A default center for India
+  const defaultCenter = [20.5937, 78.9629]; 
   const [userLocation, setUserLocation] = useState(null);
 
   return (
