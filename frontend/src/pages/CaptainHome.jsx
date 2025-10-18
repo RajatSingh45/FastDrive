@@ -130,11 +130,6 @@ const CaptainHome = () => {
   return (
     <div className="h-screen">
       <div className="fixed p-3 top-0 flex items-center justify-between w-full">
-        <img
-          className="w-16 absolute left-5 top-5"
-          src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png"
-          alt="uber logo"
-        />
         <Link
           to="/captain-login"
           className="fixed right-2 top-2 flex items-center justify-center rounded-full w-10 h-10 bg-white"
@@ -158,7 +153,7 @@ const CaptainHome = () => {
 
        <div
         ref={confirmRideRef}
-        className="fixed w-full h-[50%] z-10 bottom-0 bg-white px-3 py-10 pt-12 translate-y-full"
+        className="fixed w-full h-[50%] z-10 bottom-10 bg-white px-3 py-10 pt-10 translate-y-full"
       >
         <CaptainConfirmRide setridePopUp={setridePopUp} setconfirmRide={setconfirmRide} ride={newRide} currLocation={currLocation} dropCoords={dropCoords} geometry={geometry} distance={distance}/>
       </div>

@@ -20,6 +20,7 @@ const allowedOrigins = [
     
     "https://fastdrive-nz7q.onrender.com", 
     "http://localhost:5173",
+    "https://vrgqtjbz-5173.inc1.devtunnels.ms"
 ];
 
 

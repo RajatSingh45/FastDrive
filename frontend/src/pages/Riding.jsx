@@ -101,7 +101,7 @@ const Riding = () => {
       >
         <i className="text-lg font-medium ri-home-2-line"></i>
       </Link>
-      <div className="h-1/2">
+      <div className="h-[60%]">
         <LiveTracking
           currLocation={currLocation}
           pickupCoords={pickupCoords}
@@ -117,20 +117,20 @@ const Riding = () => {
             className="h-12"
           />
           <div className="text-right">
-            <h2 className="text-lg font-medium capitalize">
+            <h2 className="text-xl font-medium capitalize">
               {ride?.captain?.fullname.firstname}
             </h2>
-            <h4 className="text-xl font-semibold -mt-1 -mb-1">
+            <h4 className="text-lg font-semibold -mt-1 -mb-1">
               {ride?.captain?.veichle.plate}
             </h4>
-            <p className="text-sm text-gray-600">Maruti Suzuki Alto</p>
+            <p className="text-base text-gray-600">Maruti Suzuki Alto</p>
           </div>
         </div>
         <div className="flex items-center gap-5 p-3 border-b-2">
           <i className="ri-map-pin-line"></i>
           <div>
             {/* <h3 className="text-lg font-medium">562/11-A</h3> */}
-            <p className="text-sm -mt-1 text-gray-600">{ride?.drop}</p>
+            <p className="text-base -mt-1 text-gray-600">{ride?.drop}</p>
           </div>
         </div>
         <div className="flex items-center gap-5 p-3">
@@ -140,7 +140,7 @@ const Riding = () => {
           </div>
         </div>
         <button
-          className="w-full bg-green-600 font-semibold p-2 rounded-lg"
+          className="w-full bg-gray-400 font-semibold p-3 rounded-lg mt-3 hover:bg-gray-600 cursor-pointer"
           onClick={() => {
             processPayment();
           }}

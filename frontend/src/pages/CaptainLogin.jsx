@@ -45,45 +45,41 @@ const CaptainLogin = () => {
   };
   
   return (
-    <div className="p-7 flex flex-col justify-between h-scree">
+    <div className="bg-gray-50 p-8  flex flex-col min-h-screen">
       <div>
-        <img
-          className="w-16 mb-5"
-          src="https://th.bing.com/th/id/OIP.nm1FItlXC1Gk_ed4g2EINAHaCm?cb=iwp2&rs=1&pid=ImgDetMain"
-        />
         <form
           onSubmit={(e) => {
             submitHandler(e);
           }}
         >
-          <h3 className="text-lg font-medium mb-2">What's your email</h3>
+          <h3 className="text-lg font-semibold text-black mb-2">What's your email</h3>
           <input
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
             }}
-            className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
+            className="bg-gray-100 border-gray-300 text-gray-900 mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-gray-700"
             type="email"
             placeholder="email@example.com"
             required
           />
-          <h3 className="text-lg font-medium mb-2">Enter Password</h3>
+          <h3 className="text-lg font-semibold mb-2 text-black">Enter Password</h3>
           <input
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
             }}
-            className="bg-[#eeeeee] mb-7  rounded px-4 py-2 border w-full text-lg placeholder:text-base"
+            className="bg-gray-100 border-gray-300 mb-7 text-gray-900 rounded px-4 py-2 border w-full text-lg placeholder:text-gray-700"
             type="password"
             placeholder="password"
             required
           />
-          <button className="bg-[#111] text-white font-semibold mb-7  rounded px-4 py-2  w-full text-lg placeholder:text-base">
+          <button className="bg-black text-gray-200 font-semibold rounded-lg py-3 transition-all duration-200  w-full text-lg hover:bg-gray-900 cursor-pointer">
             Login
           </button>
-          <p className="text-center">
+          <p className="text-center text-sm text-black">
             Join as new driver?
-            <Link className="text-blue-600" to="/captain-signup">
+            <Link className="text-blue-600 hover:underline" to="/captain-signup">
               Create Account
             </Link>
           </p>
@@ -92,7 +88,7 @@ const CaptainLogin = () => {
       <div>
         <Link
           to={"/login"}
-          className="bg-yellow-200 flex  justify-center items-center text-black font-semibold mb-7  rounded px-4 py-2  w-full text-lg placeholder:text-base"
+          className="bg-gray-300 hover:bg-gray-400  justify-center  text-black font-semibold rounded-lg  py-3  w-full block text-lg transition-all duration-200 cursor-pointer text-center"
         >
           Signin as user
         </Link>
