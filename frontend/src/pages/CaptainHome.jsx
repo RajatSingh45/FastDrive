@@ -9,7 +9,7 @@ import { socketContext } from "../contexts/SocketContext";
 import axios from 'axios'
 import LiveTracking from "../components/LiveTrackingMap";
 import { HomeMap } from "../components/HomeMap";
-import CaptainLiveTracking from "../components/captainLiveTracking";
+import CaptainLiveTracking from "../components/CaptainLiveTracking";
 
 
 const CaptainHome = () => {
