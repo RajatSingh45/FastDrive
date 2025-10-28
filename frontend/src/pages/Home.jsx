@@ -3,6 +3,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import axios from "axios";
 import "remixicon/fonts/remixicon.css";
+import { useNavigate, useLocation } from "react-router-dom";
 import SearchPannel from "../components/SearchPannel";
 import ChooseVeichleOption from "../components/ChooseVeichleOption";
 import ConfirmVeichle from "../components/ConfirmVeichle";
@@ -11,10 +12,7 @@ import WaitingForDriver from "../components/WaitingForDriver";
 import { RideDataContext } from "../contexts/rideContext";
 import { userDataContext } from "../contexts/userDataContext";
 import { socketContext } from "../contexts/SocketContext";
-import { useNavigate } from "react-router-dom";
-import LiveTracking from "../components/LiveTrackingMap";
-import { HomeMap } from '../components/HomeMap'
-// import ChooseVeichleOption from "../components/ChooseVeichleOption";
+import { HomeMap } from "../components/HomeMap";
 
 const Home = () => {
   //useStates
@@ -25,7 +23,6 @@ const Home = () => {
   const [confirmVeichle, setConfirmVeichle] = useState(false);
   const [veichleFound, setveichleFound] = useState(false);
   const [waitingForDriver, setwaitingForDriver] = useState(false);
-  // const [adressPannel, setadressPannel] = useState(true)
   const [activeField, setActiveField] = useState("");
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [dropSuggestions, setDropSuggestions] = useState([]);
@@ -33,7 +30,7 @@ const Home = () => {
   const [ride, setRide] = useState(null);
   const [pickupCoords, setPickupCoords] = useState(null);
   const [dropCoords, setDropCoords] = useState(null);
-  const [currLocation,setCurrLocation]=useState(null)
+  const [currLocation, setCurrLocation] = useState(null);
   const [geometry, setGeometry] = useState(null);
 
   //useRefs
@@ -49,29 +46,36 @@ const Home = () => {
   const { user } = useContext(userDataContext);
   const { socket } = useContext(socketContext);
 
-  //useNavigate
+  //useNavigate and useLocation
   const navigate = useNavigate();
+  const location = useLocation();
 
   //useEffects
-  //emiting join event to join socket
+  // Check if we have data from search page
   useEffect(() => {
-    // console.log("user in home:-",user)
+    if (location.state?.pickup && location.state?.drop) {
+      const { pickup, drop } = location.state;
+      setPickup(pickup);
+      setDrop(drop);
+      // Automatically open vehicle selection
+      setveichleSelection(true);
+      findTrip(pickup, drop);
+    }
+  }, [location.state]);
+
+  // Socket and location updates (keep your existing code)
+  useEffect(() => {
     if (user && user._id) {
       socket.emit("join", { userId: user._id, userType: "user" });
 
-       const sendLocation = () => {
-        navigator.geolocation.getCurrentPosition(   //a browser api that lets you access user's device location
+      const sendLocation = () => {
+        navigator.geolocation.getCurrentPosition(
           (position) => {
-            // console.log({
-            //   lat: position.coords.latitude,
-            //   lng: position.coords.longitude,
-            // })
-            
             const location = {
               lat: position.coords.latitude,
               lng: position.coords.longitude,
             };
-            setCurrLocation(location)
+            setCurrLocation(location);
             socket.emit("update-user-loc", {
               userId: user._id,
               location,
@@ -82,77 +86,92 @@ const Home = () => {
           }
         );
       };
-   
-      sendLocation(); // Initial send
-      const intervalId = setInterval(sendLocation, 2000); // Every 10 seconds
 
+      sendLocation();
+      const intervalId = setInterval(sendLocation, 2000);
       return () => clearInterval(intervalId);
     }
-  }, [user]);
+  }, [user, socket]);
 
+  // Socket event listeners
+  useEffect(() => {
+    const handleRideConfirm = (rideData) => {
+      setveichleFound(false);
+      setwaitingForDriver(true);
+      setRide(rideData);
+    };
 
-  //socket uses
-  socket.on("ride-confirm", (ride) => {
-    setveichleFound(false);
-    setwaitingForDriver(true);
-    setRide(ride);
-  });
+    const handleRideStarted = (rideData) => {
+      setwaitingForDriver(false);
+      navigate("/riding", {
+        state: {
+          ride: rideData,
+          pickupCoords,
+          dropCoords,
+          geometry,
+          currLocation,
+        },
+      });
+    };
 
-  socket.on("ride-started", (ride) => {
-    // console.log("start ride on frontend");
-    setwaitingForDriver(false);
-    navigate("/riding", { state: { ride,
-      pickupCoords,
-      dropCoords,
-      geometry,
-      currLocation
-    } });
-  });
+    socket.on("ride-confirm", handleRideConfirm);
+    socket.on("ride-started", handleRideStarted);
 
-  //for animation of pages
+    return () => {
+      socket.off("ride-confirm", handleRideConfirm);
+      socket.off("ride-started", handleRideStarted);
+    };
+  }, [socket, navigate, pickupCoords, dropCoords, geometry, currLocation]);
+
+  // GSAP Animations (keep your existing animations)
+  // useGSAP(() => {
+  //   if (pannelOpen) {
+  //     gsap.to(pannelRef.current, {
+  //       height: "100%",
+  //       padding: 24,
+  //       duration: 0.3,
+  //     });
+  //     gsap.to(pannelCloseRef.current, {
+  //       opacity: 1,
+  //       duration: 0.3,
+  //     });
+  //   } else {
+  //     gsap.to(pannelRef.current, {
+  //       height: "0%",
+  //       padding: 0,
+  //       duration: 0.3,
+  //     });
+  //     gsap.to(pannelCloseRef.current, {
+  //       opacity: 0,
+  //       duration: 0.3,
+  //     });
+  //   }
+  // }, [pannelOpen]);
+
   useGSAP(() => {
-    if (pannelOpen) {
-      gsap.to(pannelRef.current, {
-        height: "100%",
-        padding: 24,
-      });
-      gsap.to(pannelCloseRef.current, {
-        opacity: 1,
-      });
-    } else {
-      gsap.to(pannelRef.current, {
-        height: "0%",
-        padding: 0,
-      });
-      gsap.to(pannelCloseRef.current, {
-        opacity: 0,
-      });
-    }
-  }, [pannelOpen]);
-
-  useGSAP(() => {
-    // console.log("veichleSelection is called!");
     if (veichleSelection) {
       gsap.to(veichleSelectionRef.current, {
         transform: "translateY(0)",
+        duration: 0.3,
       });
     } else {
       gsap.to(veichleSelectionRef.current, {
         transform: "translateY(100%)",
+        duration: 0.3,
       });
     }
   }, [veichleSelection]);
 
   useGSAP(() => {
     if (confirmVeichle) {
-      console.log("cfv open!");
       gsap.to(confirmVeichleRef.current, {
         transform: "translateY(0)",
+        duration: 0.3,
       });
     } else {
-      console.log("cfv close!");
       gsap.to(confirmVeichleRef.current, {
         transform: "translateY(100%)",
+        duration: 0.3,
       });
     }
   }, [confirmVeichle]);
@@ -161,10 +180,12 @@ const Home = () => {
     if (veichleFound) {
       gsap.to(veichleFoundRef.current, {
         transform: "translateY(0)",
+        duration: 0.3,
       });
     } else {
       gsap.to(veichleFoundRef.current, {
         transform: "translateY(100%)",
+        duration: 0.3,
       });
     }
   }, [veichleFound]);
@@ -173,10 +194,12 @@ const Home = () => {
     if (waitingForDriver) {
       gsap.to(waitingForDriverRef.current, {
         transform: "translateY(0)",
+        duration: 0.3,
       });
     } else {
       gsap.to(waitingForDriverRef.current, {
         transform: "translateY(100%)",
+        duration: 0.3,
       });
     }
   }, [waitingForDriver]);
@@ -185,31 +208,26 @@ const Home = () => {
     e.preventDefault();
   };
 
-  //funtion to handle pickup and drop onchnage also will set pickupSuggestion and dropSuggestion
+  // Handle input changes for suggestions
   const handlePickupChange = async (e) => {
     const value = e.target.value;
     setPickup(value);
 
     if (!value) {
-      setPickupSuggestions([]); // Clear suggestions when input is empty
+      setPickupSuggestions([]);
       return;
     }
 
-    //calling the api from backend
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
         {
-          params: { input: e.target.value },
+          params: { input: value },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
-      // console.log(response.data);
-      if (!response) {
-        console.log("Psuggestion not get ");
-      }
       setPickupSuggestions(response.data);
     } catch (error) {
       console.error("Error fetching pickup suggestions:", error.message);
@@ -226,23 +244,16 @@ const Home = () => {
       return;
     }
 
-    //calling api from backend
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
         {
-          params: { input: e.target.value },
+          params: { input: value },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
-
-      // console.log(response.data);
-      if (!response) {
-        console.log("suggestion not get ");
-      }
-
       setDropSuggestions(response.data);
     } catch (error) {
       console.error("Error fetching drop suggestions:", error.message);
@@ -250,21 +261,22 @@ const Home = () => {
     }
   };
 
-  //function to handle find trip
-  async function findTrip() {
+  // Function to handle find trip
+  async function findTrip(pickupLocation = pickup, dropLocation = drop) {
     setveichleSelection(true);
     setPannelOpen(false);
 
-    if (!pickup || !drop) {
-      alert("provide valid address");
+    if (!pickupLocation || !dropLocation) {
+      alert("Please provide valid addresses");
       setveichleSelection(false);
+      return;
     }
 
-    // API call for coordinates and geometry moved here
+    // API call for coordinates and geometry
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/maps/get-coordinates`,
-        { pickup, drop },
+        { pickup: pickupLocation, drop: dropLocation },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -272,49 +284,40 @@ const Home = () => {
         }
       );
 
-      //  console.log("fetching pickupCoords:", response.data.coordinates[0]);
       const [pickupLng, pickupLat] = response.data.coordinates[0];
       const [dropLng, dropLat] = response.data.coordinates[1];
 
-      console.log("response:",response.data.coordinates[0],response.data.coordinates[1])
       setPickupCoords([pickupLat, pickupLng]);
       setDropCoords([dropLat, dropLng]);
       setGeometry(response.data.geometry);
-
     } catch (error) {
       console.error("Error in fetching coordinates:", error.message);
     }
 
+    // API call for fares
     try {
-      console.log("Sending request with:", { pickup, drop });
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/rides/get-fares`,
         {
-          params: { pickup, drop },
+          params: { pickup: pickupLocation, drop: dropLocation },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
       setFares(response.data);
-      console.log(fares);
     } catch (error) {
-      console.error("Full error details:", {
-        status: error.response?.status,
-        data: error.response?.data,
-        config: error.config,
-      });
+      console.error("Error fetching fares:", error);
       alert(
         `Failed to get fares: ${error.response?.data?.message || error.message}`
       );
     }
   }
 
-  //function to create a ride
+  // Function to create a ride
   const createRide = async () => {
-    console.log("confirm clicked at home!");
     try {
-      const ride = await axios.post(
+      const rideResponse = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/rides/create-ride`,
         {
           pickup,
@@ -328,15 +331,14 @@ const Home = () => {
           },
         }
       );
-
-      console.log(ride.data);
+      console.log("Ride created:", rideResponse.data);
     } catch (error) {
-      console.log("error in creating the ride:", error);
+      console.log("Error in creating the ride:", error);
       throw new Error(error);
     }
   };
 
-  //funtion to  handle back button apperaing on map (to jump back to previous page)
+  // Function to handle back button
   const backButtonHandler = () => {
     if (confirmVeichle) {
       setConfirmVeichle(false);
@@ -344,99 +346,64 @@ const Home = () => {
     } else if (veichleSelection) {
       setveichleSelection(false);
       setTimeout(() => setPannelOpen(true), 200);
+    } else if (pannelOpen) {
+      setPannelOpen(false);
     }
   };
 
+  const handleSearchClick = () => {
+    navigate("/search", {
+      state: {
+        currentPickup: pickup,
+        currentDrop: drop,
+      },
+    });
+  };
+
+   const handleBack = () => {
+    navigate(-1); // Go back to previous page (Home)
+  };
+
   return (
-    // <div className="h-screen relative">
     <div className="h-screen flex flex-col relative">
-    {/* This container will hold the map and the back button */}
-    <div className="h-2/3 w-full relative z-0">
-      {(veichleSelection || confirmVeichle) && (
-        <h5
-          onClick={() => {
-            backButtonHandler();
-          }}
-          className="w-16 absolute left-5 top-5 z-50 "
-        >
-          <i className="ri-arrow-left-long-line"></i>
-        </h5>
-      )}
-      {/* <div className="h-screen w-screen"> */}
-      {/* <div className="h-[65%] w-full relative z-0"> */}
-        <HomeMap/>
-      {/* </div> */}
+      <div className="h-screen w-full relative z-0">
+        {(pannelOpen || veichleSelection || confirmVeichle) && (
+          <button
+            onClick={backButtonHandler}
+            className="w-12 h-12 absolute left-5 top-5 z-50 bg-white rounded-full shadow-lg flex items-center justify-center"
+          >
+            <i className="ri-arrow-left-line text-xl"></i>
+          </button>
+        )}
+        <HomeMap
+          pickupCoords={pickupCoords}
+          dropCoords={dropCoords}
+          geometry={geometry}
+        />
       </div>
-      {/* <div className="flex flex-col justify-end h-screen absolute top-0 w-full"> */}
-      <div className="h-1/3 w-full relative z-10 flex flex-col justify-end">
-        <div className="h-full p-6 bg-white relative">
-          <h5
-            ref={pannelCloseRef}
-            onClick={() => {
-              setPannelOpen(false);
-            }}
-            className="absolute right-6 top-6 text-2xl opacity-0"
-          >
-            <i className="ri-arrow-down-wide-line"></i>
-          </h5>
-          <h4 className="text-xl font-semibold ">Make a trip</h4>
-          <form
-            onSubmit={(e) => {
-              submitHandler(e);
-            }}
-          >
-            <div className="line absolute h-16 w-1 top-[45%] left-10 bg-gray-700 rounded-full"></div>
-            <input
-              className="bg-[#eee] px-10 py-2 text-base rounded-lg  w-full  mt-5"
-              type="text"
-              value={pickup}
-              onClick={() => {
-                setPannelOpen(true);
-                setActiveField("pickup");
-              }}
-              onChange={handlePickupChange}
-              placeholder="Add a pick-up location"
-            />
-            <input
-              className="bg-[#eee] px-10 py-2 text-base rounded-lg  w-full  mt-5"
-              type="text"
-              value={drop}
-              onClick={() => {
-                setPannelOpen(true);
-                setActiveField("drop");
-              }}
-              onChange={handleDropChange}
-              placeholder="Enter your destination"
-            />
-          </form>
-          {pannelOpen && (
-            <button
-              onClick={findTrip}
-              className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full"
-            >
-              Find Trip
-            </button>
+
+      {/* Bottom Section */}
+      <div className="w-full relative z-10 flex flex-col justify-end">
+        {/* Main Search Form - Show when no panels are active */}
+        {!pannelOpen &&
+          !veichleSelection &&
+          !confirmVeichle &&
+          !veichleFound &&
+          !waitingForDriver && (
+            <div className="p-6 bg-transparent">
+              <button
+                onClick={handleSearchClick}
+                className="bg-black text-white px-4 py-4 rounded-lg w-full text-lg font-semibold flex items-center justify-center gap-3"
+              >
+                <i className="ri-search-line text-xl"></i>
+                {pickup && drop ? "Modify Trip" : "Make Trip?"}
+              </button>
+            </div>
           )}
-        </div>
-        <div
-          ref={pannelRef}
-          className={`bg-white h-0 ${pannelOpen ? "" : "hidden"}`}
-        >
-          <SearchPannel
-            suggestions={
-              activeField === "pickup" ? pickupSuggestions : dropSuggestions
-            }
-            setPickup={setPickup}
-            setDrop={setDrop}
-            activeField={activeField}
-            setveichleSelection={setveichleSelection}
-            setPannelOpen={setPannelOpen}
-            findTrip={findTrip}
-          />
-        </div>
+        {/* Vehicle Selection Panel */}
         <div
           ref={veichleSelectionRef}
-          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3"
+          className="bg-white fixed bottom-0 left-0 right-0 transform translate-y-full z-20 px-3 rounded-t-2xl shadow-2xl"
         >
           <ChooseVeichleOption
             setConfirmVeichle={setConfirmVeichle}
@@ -446,9 +413,11 @@ const Home = () => {
             drop={drop}
           />
         </div>
+
+        {/* Confirm Vehicle Panel */}
         <div
           ref={confirmVeichleRef}
-          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10"
+          className="bg-white fixed bottom-0 left-0 right-0 transform translate-y-full z-20 px-3 py-6 rounded-t-2xl shadow-2xl"
         >
           <ConfirmVeichle
             setConfirmVeichle={setConfirmVeichle}
@@ -460,9 +429,11 @@ const Home = () => {
             ride={ride}
           />
         </div>
+
+        {/* Vehicle Found Panel */}
         <div
           ref={veichleFoundRef}
-          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10"
+          className="bg-white fixed bottom-0 left-0 right-0 transform translate-y-full z-20 px-3 py-6 rounded-t-2xl shadow-2xl"
         >
           <VeichleFound
             setveichleFound={setveichleFound}
@@ -472,9 +443,11 @@ const Home = () => {
             ride={ride}
           />
         </div>
+
+        {/* Waiting for Driver Panel */}
         <div
           ref={waitingForDriverRef}
-          className="bg-white fixed z-10 bottom-0 translate-y-full w-full px-3 py-10"
+          className="bg-white fixed bottom-0 left-0 right-0 transform translate-y-full z-20 px-3 py-6 rounded-t-2xl shadow-2xl"
         >
           <WaitingForDriver
             ride={ride}
@@ -483,7 +456,6 @@ const Home = () => {
           />
         </div>
       </div>
-      {/* </div> */}
     </div>
   );
 };

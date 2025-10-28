@@ -51,6 +51,7 @@ const Signup = () => {
     setLastname('')
   };
   return (
+    // <div className="h-screen flex flex-col justify-center bg-gray-50 p-8 max-w-md mx-auto lg:max-w-lg lg:shadow-lg lg:rounded-xl lg:my-8">
     <div className="p-7 flex flex-col justify-between h-scree">
       <div>
         <img
@@ -118,6 +119,7 @@ const Signup = () => {
         </form>
       </div>
     </div>
+    // </div>
   );
 };
 
