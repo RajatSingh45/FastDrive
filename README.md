@@ -37,6 +37,40 @@ npm start
 ### Dependencies
 ## 🛠️ Tech Stack & Dependencies
 
+### Frontend (React / Vite)
+- Core: React, Vite
+- Routing: react-router-dom
+- HTTP: axios
+- State / Utils: react-query (if used) or local state
+- Styling: tailwindcss, postcss
+- Icons: react-icons
+- Maps: leaflet, react-leaflet
+- Payments: razorpay (checkout)
+- Dev / Build: vite, eslint, prettier
+
+Suggested package installs (frontend):
+```powershell
+cd frontend
+npm install react react-dom react-router-dom axios tailwindcss postcss autoprefixer react-icons leaflet react-leaflet razorpay
+npm install -D vite eslint prettier
+```
+
+### Backend (Node / Express)
+- Runtime & framework: Node.js, Express
+- DB & ODM: mongodb, mongoose
+- Auth & Security: jsonwebtoken, bcryptjs, cookie-parser, cors
+- Real-time: socket.io
+- Payments: razorpay (server sdk)
+- Dev tools: nodemon, dotenv
+
+Suggested package installs (backend):
+```powershell
+cd backend
+npm install express mongoose jsonwebtoken bcryptjs cookie-parser cors socket.io razorpay dotenv
+npm install -D nodemon
+```
+  
+
 ### 📋 Overview
 This is a full-stack ride-hailing application built with modern technologies and deployed on cloud infrastructure.
 
