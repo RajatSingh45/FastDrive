@@ -7,6 +7,8 @@ const FinishRide = (props) => {
   const captain=localStorage.getItem('captain')
 
   // console.log("ride in finishRideId:",props.ride._id)
+
+
   console.log("captain:",captain)
 
   async function endRide() {

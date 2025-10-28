@@ -39,6 +39,9 @@ const Login = () => {
   };
 
   return (
+
+    // <div className="h-screen flex flex-col  bg-gray-50 p-8 max-w-md mx-auto lg:max-w-lg lg:shadow-lg lg:rounded-xl lg:my-8 right-0">
+
     <div className="h-screen flex flex-col  bg-gray-50 p-8">
       <div>
         <form onSubmit={submitHandler} className="space-y-5">
@@ -91,6 +94,7 @@ const Login = () => {
         </Link>
       </div>
     </div>
+    // </div>
   );
 };
 
