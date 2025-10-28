@@ -190,12 +190,6 @@ The application should now be running at:
 ![Captain home page](./frontend/src//assets/captainHomePage.png)
 ![Captain riding page](./frontend/src/assets/captainRiding.png)
 
-## 🎥 Demo Video
-![Demo Video](./frontend/src/assets/demo.mp4)
-
-
-
-
 ## License
 
 This project is licensed under the MIT License:

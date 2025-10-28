@@ -4,7 +4,7 @@ import gsap from "gsap";
 import axios from "axios";
 import "remixicon/fonts/remixicon.css";
 import { useNavigate, useLocation } from "react-router-dom";
-import SearchPannel from "../components/SearchPannel";
+// import SearchPannel from "../components/SearchPannel";
 import ChooseVeichleOption from "../components/ChooseVeichleOption";
 import ConfirmVeichle from "../components/ConfirmVeichle";
 import VeichleFound from "../components/VeichleFound";
@@ -34,11 +34,11 @@ const Home = () => {
   const [geometry, setGeometry] = useState(null);
 
   //useRefs
-  const pannelRef = useRef(null);
+  // const pannelRef = useRef(null);
   const veichleSelectionRef = useRef(null);
   const confirmVeichleRef = useRef(null);
   const veichleFoundRef = useRef(null);
-  const pannelCloseRef = useRef(null);
+  // const pannelCloseRef = useRef(null);
   const waitingForDriverRef = useRef(null);
 
   //useContexts
@@ -122,31 +122,6 @@ const Home = () => {
       socket.off("ride-started", handleRideStarted);
     };
   }, [socket, navigate, pickupCoords, dropCoords, geometry, currLocation]);
-
-  // GSAP Animations (keep your existing animations)
-  // useGSAP(() => {
-  //   if (pannelOpen) {
-  //     gsap.to(pannelRef.current, {
-  //       height: "100%",
-  //       padding: 24,
-  //       duration: 0.3,
-  //     });
-  //     gsap.to(pannelCloseRef.current, {
-  //       opacity: 1,
-  //       duration: 0.3,
-  //     });
-  //   } else {
-  //     gsap.to(pannelRef.current, {
-  //       height: "0%",
-  //       padding: 0,
-  //       duration: 0.3,
-  //     });
-  //     gsap.to(pannelCloseRef.current, {
-  //       opacity: 0,
-  //       duration: 0.3,
-  //     });
-  //   }
-  // }, [pannelOpen]);
 
   useGSAP(() => {
     if (veichleSelection) {
