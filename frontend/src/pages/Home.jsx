@@ -377,7 +377,7 @@ const Home = () => {
   return (
     <div className="h-screen flex flex-col relative">
       {/* Map Container */}
-      <div className="h-2/3 w-full relative z-0">
+      <div className="h-screen w-full relative z-0">
         {(pannelOpen || veichleSelection || confirmVeichle) && (
           <button
             onClick={backButtonHandler}
@@ -394,7 +394,7 @@ const Home = () => {
       </div>
 
       {/* Bottom Section */}
-      <div className="h-1/3 w-full relative z-10 flex flex-col justify-end">
+      <div className="w-full relative z-10 flex flex-col justify-end">
         {/* Main Search Form - Show when no panels are active */}
         {!pannelOpen &&
           !veichleSelection &&
