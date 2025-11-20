@@ -11,12 +11,9 @@ import L from "leaflet";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+  iconRetinaUrl: new URL('leaflet/dist/images/marker-icon-2x.png', import.meta.url).href,
+  iconUrl: new URL('leaflet/dist/images/marker-icon.png', import.meta.url).href,
+  shadowUrl: new URL('leaflet/dist/images/marker-shadow.png', import.meta.url).href,
 });
 
 // This component handles finding and marking the current location
@@ -51,6 +48,14 @@ export function HomeMap() {
   const defaultCenter = [20.5937, 78.9629]; 
   const [userLocation, setUserLocation] = useState(null);
 
+  const tilesUrl = api_key
+    ? `https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=${api_key}`
+    : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+  const attribution = api_key
+    ? '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>'
+    : '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>';
+
   return (
     <MapContainer
       center={userLocation || defaultCenter}
@@ -62,8 +67,8 @@ export function HomeMap() {
       doubleClickZoom={true}
     >
      <TileLayer
-  url={`https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=${api_key}`}
-  attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>'
+  url={tilesUrl}
+  attribution={attribution}
 />
       <LocationMarker onLocationFound={setUserLocation} />
     </MapContainer>
