@@ -22,8 +22,8 @@ const captainSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    unique: true,
     select: false,
+    unique:true
   },
   socketId: {
     type: String,
@@ -59,12 +59,12 @@ const captainSchema = new mongoose.Schema({
     type: {
         type: String,
         enum: ['Point'],
-        required: true,
-        default: 'Point'
+        default:point,
+        required:true
     },
     coordinates: {
         type: [Number], // [lng, lat]
-        required: true
+        required:true
     }
 },
 totalEarn:{
