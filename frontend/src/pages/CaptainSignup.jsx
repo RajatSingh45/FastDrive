@@ -30,7 +30,7 @@ const CaptainSignup = () => {
       veichle:{
         color:veichleColor,
         plate:veichlePlate,
-        capacity:veichleCapacity,
+        capacity:parseInt(veichleCapacity),
         veichleType:veichleType
       }
     }
