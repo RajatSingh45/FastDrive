@@ -13,7 +13,7 @@ captainRouter.post('/register',[
     body('veichle.color').isLength({min:3}).withMessage("minimum length of veichle color should be three"),
     body('veichle.plate').isLength({min:3}).withMessage("minimum length of veichle plate number should be three"),
     body('veichle.capacity').isInt({min:1}).withMessage("minimum capacity of veichle should be one"),
-    body('veichle.veichleType').isIn(['Car','Motorcycle','Auto']).withMessage("Invalid vechile type")
+    body('veichle.veichleType').isIn(['Car','Moto','Auto']).withMessage("Invalid vechile type")
 ],captainRegister)
 
 //routing login api

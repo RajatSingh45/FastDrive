@@ -56,6 +56,7 @@ const captainRegister = async (req, res) => {
 
     res.status(201).json({ success: true, token, captain });
   } catch (err) {
+    console.log("Erorr:",err.message)
     res.status(400).json({ success: false, message: err.message });
   }
 };
