@@ -59,12 +59,11 @@ const captainSchema = new mongoose.Schema({
     type: {
         type: String,
         enum: ['Point'],
-        default:'Point',
-        required:true
+        required:false
     },
     coordinates: {
         type: [Number], // [lng, lat]
-        required:true
+        required:false
     }
 },
 totalEarn:{
@@ -74,7 +73,7 @@ totalEarn:{
 });
 
 // Add 2dsphere index for geospatial queries
-captainSchema.index({ location: "2dsphere" });
+captainSchema.index({ location: "2dsphere" }, { sparse: true });
 
 //creating the authtoken
 captainSchema.methods.genrateJwtToken = function () {

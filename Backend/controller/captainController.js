@@ -48,7 +48,7 @@ const captainRegister = async (req, res) => {
         plate: veichle.plate,
         capacity: veichle.capacity,
         veichleType: veichle.veichleType,
-      },
+      }
     });
 
     //genrating token
