@@ -59,7 +59,7 @@ const captainSchema = new mongoose.Schema({
     type: {
         type: String,
         enum: ['Point'],
-        default:point,
+        default:'Point',
         required:true
     },
     coordinates: {
